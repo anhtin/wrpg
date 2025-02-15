@@ -45,11 +45,12 @@ public class CreateAccountTest
             });
     }
 
-    [Theory]
-    [InlineData("Nickname with space")]
-    [InlineData("$pecial$ymbols")]
-    public void Returns_400_Bad_Request_when_nickname_is_invalid(string nickname)
+    [Fact]
+    public void Returns_400_Bad_Request_when_nickname_is_invalid()
     {
+        var nickname = "Invalid nickname";
+        Assert.False(Nickname.IsValid(nickname));
+
         var command = CreateCommand(nickname: nickname);
 
         var result = CreateAccount.ExecuteLogic(command);

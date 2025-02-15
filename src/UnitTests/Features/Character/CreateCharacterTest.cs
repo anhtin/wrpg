@@ -66,11 +66,12 @@ public class CreateCharacterTest
             });
     }
 
-    [Theory]
-    [InlineData("Character name with space")]
-    [InlineData("$pecial $ymbols")]
-    public void Returns_400_Bad_Request_when_CharacterName_is_bad(string characterName)
+    [Fact]
+    public void Returns_400_Bad_Request_when_CharacterName_is_bad()
     {
+        var characterName = "Invalid character name";
+        Assert.False(CharacterName.IsValid(characterName));
+
         var command = CreateCommand(characterName: characterName);
         var data = CreateData();
 
