@@ -6,6 +6,11 @@ namespace Wrpg;
 
 public static class CustomExceptionHandler
 {
+    public static ExceptionHandlerOptions CreateOptions(bool isDevelopment) => new()
+    {
+        ExceptionHandler = CreateDelegate(isDevelopment),
+    };
+
     public static RequestDelegate CreateDelegate(bool isDevelopment) => async context =>
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()!.Error;

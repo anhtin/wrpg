@@ -7,15 +7,15 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
     AppDbContext.Configure(builder.Configuration, optionsBuilder));
 
+
 var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseExceptionHandler(CustomExceptionHandler.CreateOptions(app.Environment.IsDevelopment()));
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    // app.UseReDoc(options =>
-    // {
-    //     options.RoutePrefix = "docs";
-    //     options.SpecUrl = "/openapi/v1.json";
-    // });
     app.UseSwaggerUI(options =>
     {
         options.RoutePrefix = "docs";
@@ -23,18 +23,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
 
 app.MapAccountEndpoints();
 app.MapCharacterEndpoints();
 
 
-app.UseExceptionHandler(new ExceptionHandlerOptions
-{
-    ExceptionHandler = CustomExceptionHandler.CreateDelegate(app.Environment.IsDevelopment()),
-});
-
 app.Run();
+
 
 namespace Wrpg
 {
