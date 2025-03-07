@@ -7,7 +7,7 @@ namespace Wrpg.UnitTests;
 public class CreateCharacterTest
 {
     [Fact]
-    public void Returns_200_Ok_when_all_is_good()
+    public void Succeeds_when_all_is_good()
     {
         var command = CreateCommand(characterName: Generator.RandomString());
         var data = CreateData(accountId: Generator.RandomInt());
@@ -44,7 +44,7 @@ public class CreateCharacterTest
     }
 
     [Fact]
-    public void Returns_400_Bad_Request_when_AccountId_is_null()
+    public void Fails_when_AccountId_is_null()
     {
         var command = CreateCommand();
         var data = CreateData(accountId: null);
@@ -67,7 +67,7 @@ public class CreateCharacterTest
     }
 
     [Fact]
-    public void Returns_400_Bad_Request_when_CharacterName_is_bad()
+    public void Fails_when_CharacterName_is_bad()
     {
         var characterName = "Invalid character name";
         Assert.False(CharacterName.IsValid(characterName));

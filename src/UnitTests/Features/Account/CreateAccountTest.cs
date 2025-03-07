@@ -7,7 +7,7 @@ namespace Wrpg.UnitTests;
 public class CreateAccountTest
 {
     [Fact]
-    public void Returns_201_Created_when_all_is_good()
+    public void Succeeds_when_all_is_good()
     {
         var command = CreateCommand(
             identityProvider: Generator.RandomString(),
@@ -46,7 +46,7 @@ public class CreateAccountTest
     }
 
     [Fact]
-    public void Returns_400_Bad_Request_when_nickname_is_invalid()
+    public void Fails_when_nickname_is_invalid()
     {
         var nickname = "Invalid nickname";
         Assert.False(Nickname.IsValid(nickname));

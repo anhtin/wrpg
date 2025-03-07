@@ -5,7 +5,7 @@ public class NicknameTest
     [Theory]
     [InlineData("nickname-with-hyphens")]
     [InlineData("nickname_with_underscore")]
-    public void IsValid_returns_true_when_Nickname_only_contains_valid_characters(string nickname)
+    public void IsValid_returns_true_when_Nickname_is_valid(string nickname)
     {
         var result = Nickname.IsValid(nickname);
         Assert.True(result);

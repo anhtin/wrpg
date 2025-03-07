@@ -6,7 +6,7 @@ namespace Wrpg.UnitTests;
 public class DeleteAccountTest
 {
     [Fact]
-    public void Returns_200_Ok_when_Data_is_not_null()
+    public void Succeeds_when_Account_exists()
     {
         var data = CreateData(
             account: AccountGenerator.Create(),
@@ -35,7 +35,7 @@ public class DeleteAccountTest
     }
     
     [Fact]
-    public void Returns_400_Not_Found_when_Data_is_not_null()
+    public void Fails_when_Account_does_not_exists()
     {
         DeleteAccount.Data? data = null;
 
