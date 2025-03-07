@@ -34,14 +34,14 @@ namespace Wrpg.Shared.Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     AccountId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Stats_Attributes_Constitution = table.Column<int>(type: "integer", nullable: false),
+                    Stats_Attributes_Level = table.Column<int>(type: "integer", nullable: false),
+                    Stats_Attributes_Strength = table.Column<int>(type: "integer", nullable: false),
                     Stats_Attributes_Dexterity = table.Column<int>(type: "integer", nullable: false),
                     Stats_Attributes_Intelligence = table.Column<int>(type: "integer", nullable: false),
-                    Stats_Attributes_Level = table.Column<int>(type: "integer", nullable: false),
+                    Stats_Attributes_Constitution = table.Column<int>(type: "integer", nullable: false),
                     Stats_Attributes_Spirit = table.Column<int>(type: "integer", nullable: false),
-                    Stats_Attributes_Strength = table.Column<int>(type: "integer", nullable: false),
-                    Stats_Resources_Energy = table.Column<int>(type: "integer", nullable: false),
-                    Stats_Resources_Health = table.Column<int>(type: "integer", nullable: false)
+                    Stats_Resources_Health = table.Column<int>(type: "integer", nullable: false),
+                    Stats_Resources_Energy = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
