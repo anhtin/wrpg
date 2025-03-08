@@ -1,10 +1,10 @@
 ﻿using Wrpg;
 
-namespace Features;
+namespace Features.Character;
 
 public static class CharacterGenerator
 {
-    public static Character Create(
+    public static Wrpg.Character Create(
         int id = 0,
         string? name = null,
         int? accountId = null,

@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Features.Character;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Wrpg;
 using Wrpg.Shared.SideEffects;
 
-namespace Features;
+namespace Features.Account;
 
 public class DeleteAccountTest
 {
@@ -24,12 +25,12 @@ public class DeleteAccountTest
                 Assert.Multiple(
                     () =>
                     {
-                        var expected = new DeleteEntity<Account>(data.Account);
+                        var expected = new DeleteEntity<Wrpg.Account>(data.Account);
                         Assert.Equal(expected, subject.DeleteAccount);
                     },
                     () =>
                     {
-                        var expected = data.Characters.Select(x => new DeleteEntity<Character>(x));
+                        var expected = data.Characters.Select(x => new DeleteEntity<Wrpg.Character>(x));
                         Assert.Equal(expected, subject.DeleteCharacters);
                     });
             });
@@ -48,8 +49,8 @@ public class DeleteAccountTest
     }
 
     private static DeleteAccount.Data CreateData(
-        Account? account = null,
-        IEnumerable<Character>? characters = null) => new()
+        Wrpg.Account? account = null,
+        IEnumerable<Wrpg.Character>? characters = null) => new()
     {
         Account = account ?? AccountGenerator.Create(),
         Characters = characters ?? [],

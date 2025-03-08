@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Wrpg;
 using Wrpg.Shared.SideEffects;
 
-namespace Features;
+namespace Features.Account;
 
 public class CreateAccountTest
 {
@@ -34,10 +34,10 @@ public class CreateAccountTest
                 Assert.NotNull(result.SideEffects);
                 var subject = result.SideEffects.CreateAccount;
                 Assert.Multiple(
-                    () => Assert.IsType<CreateEntity<Account>>(subject),
+                    () => Assert.IsType<CreateEntity<Wrpg.Account>>(subject),
                     () =>
                     {
-                        var expected = new CreateEntity<Account>(AccountGenerator.Create(
+                        var expected = new CreateEntity<Wrpg.Account>(AccountGenerator.Create(
                             identityProvider: command.IdentityProvider,
                             identityId: command.IdentityId,
                             nickname: command.Nickname));

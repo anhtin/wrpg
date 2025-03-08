@@ -1,6 +1,6 @@
 ﻿using Wrpg;
 
-namespace Features;
+namespace Features.Account;
 
 public class NicknameTest
 {

@@ -1,10 +1,8 @@
-﻿using Wrpg;
-
-namespace Features;
+﻿namespace Features.Account;
 
 public static class AccountGenerator
 {
-    public static Account Create(
+    public static Wrpg.Account Create(
         int id = 0,
         string? identityProvider = null,
         string? identityId = null,

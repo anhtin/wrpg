@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Wrpg;
 using Wrpg.Shared.SideEffects;
 
-namespace Features;
+namespace Features.Character;
 
 public class CreateCharacterTest
 {
@@ -32,10 +32,10 @@ public class CreateCharacterTest
                 var subject = result.SideEffects;
                 Assert.NotNull(subject);
                 Assert.Multiple(
-                    () => Assert.IsType<CreateEntity<Character>>(subject.CreateCharacter),
+                    () => Assert.IsType<CreateEntity<Wrpg.Character>>(subject.CreateCharacter),
                     () =>
                     {
-                        var expected = new CreateEntity<Character>(CharacterGenerator.Create(
+                        var expected = new CreateEntity<Wrpg.Character>(CharacterGenerator.Create(
                             name: command.CharacterName,
                             accountId: data.AccountId,
                             stats: Stats.CreateNew()));
