@@ -1,4 +1,6 @@
-﻿namespace Wrpg.UnitTests;
+﻿using Wrpg;
+
+namespace Features;
 
 public static class CharacterGenerator
 {

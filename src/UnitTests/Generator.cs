@@ -1,6 +1,4 @@
-﻿namespace Wrpg.UnitTests;
-
-public static class Generator
+﻿public static class Generator
 {
     public static string RandomString() => Guid.NewGuid().ToString();
 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Wrpg;
 using Wrpg.Shared.SideEffects;
 
-namespace Wrpg.UnitTests;
+namespace Features;
 
 public class DeleteAccountTest
 {
