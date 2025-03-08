@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      - name: Run unit tests
-        run: dotnet test ./src/UnitTests/ --logger "trx;LogFileName=test-results.trx"
+      - name: Run tests
+        run: dotnet test --logger "trx;LogFileName=test-results.trx"
 
       - name: Generate unit test report
         uses: dorny/test-reporter@v1
@@ -33,4 +33,20 @@ jobs:
         with:
           name: Unit test report
           path: ./src/UnitTests/TestResults/test-results.trx
+          reporter: dotnet-trx
+
+      - name: Generate integration test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Integration test report
+          path: ./src/IntegrationTests/TestResults/test-results.trx
+          reporter: dotnet-trx
+
+      - name: Generate smoke test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Smoke test report
+          path: ./src/SmokeTests/TestResults/test-results.trx
           reporter: dotnet-trx
