@@ -9,11 +9,6 @@ namespace Wrpg;
 [Feature]
 public static class GetAccount
 {
-    public class Response
-    {
-        public required string Nickname { get; init; }
-    }
-
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
@@ -31,5 +26,10 @@ public static class GetAccount
             {
                 Nickname = account.Nickname,
             });
+    }
+
+    public class Response
+    {
+        public required string Nickname { get; init; }
     }
 }

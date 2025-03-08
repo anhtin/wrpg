@@ -9,34 +9,6 @@ namespace Wrpg;
 [Feature]
 public static class GetCharacter
 {
-    public class Response
-    {
-        public required string Name { get; init; }
-        public required Stats Stats { get; init; }
-    }
-
-    public class Stats
-    {
-        public required Attributes Attributes { get; init; }
-        public required Resources Resources { get; init; }
-    }
-
-    public class Attributes
-    {
-        public required int Level { get; init; }
-        public required int Strength { get; init; }
-        public required int Dexterity { get; init; }
-        public required int Intelligence { get; init; }
-        public required int Constitution { get; init; }
-        public required int Spirit { get; init; }
-    }
-
-    public class Resources
-    {
-        public required int Health { get; init; }
-        public required int Energy { get; init; }
-    }
-
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
@@ -71,5 +43,33 @@ public static class GetCharacter
                     },
                 },
             });
+    }
+
+    public class Response
+    {
+        public required string Name { get; init; }
+        public required Stats Stats { get; init; }
+    }
+
+    public class Stats
+    {
+        public required Attributes Attributes { get; init; }
+        public required Resources Resources { get; init; }
+    }
+
+    public class Attributes
+    {
+        public required int Level { get; init; }
+        public required int Strength { get; init; }
+        public required int Dexterity { get; init; }
+        public required int Intelligence { get; init; }
+        public required int Constitution { get; init; }
+        public required int Spirit { get; init; }
+    }
+
+    public class Resources
+    {
+        public required int Health { get; init; }
+        public required int Energy { get; init; }
     }
 }

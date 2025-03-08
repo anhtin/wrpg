@@ -11,12 +11,6 @@ namespace Wrpg;
 [Feature]
 public static class CreateCharacter
 {
-    public class Request
-    {
-        public required string CharacterName { get; init; }
-        public required string AccountNickname { get; init; }
-    }
-
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
@@ -40,7 +34,17 @@ public static class CreateCharacter
         return result.Http;
     }
 
-    internal class Command : Request;
+    public class Request
+    {
+        public required string CharacterName { get; init; }
+        public required string AccountNickname { get; init; }
+    }
+
+    internal class Command
+    {
+        public required string CharacterName { get; init; }
+        public required string AccountNickname { get; init; }
+    }
 
     internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
     {

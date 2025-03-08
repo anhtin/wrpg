@@ -10,13 +10,6 @@ namespace Wrpg;
 [Feature]
 public static class CreateAccount
 {
-    public class Request
-    {
-        public required string IdentityProvider { get; init; }
-        public required string IdentityId { get; init; }
-        public required string Nickname { get; init; }
-    }
-
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
@@ -40,7 +33,19 @@ public static class CreateAccount
         return result.Http;
     }
 
-    internal class Command : Request;
+    public class Request
+    {
+        public required string IdentityProvider { get; init; }
+        public required string IdentityId { get; init; }
+        public required string Nickname { get; init; }
+    }
+
+    internal class Command
+    {
+        public required string IdentityProvider { get; init; }
+        public required string IdentityId { get; init; }
+        public required string Nickname { get; init; }
+    }
 
     internal static Result ExecuteLogic(Command command)
     {
