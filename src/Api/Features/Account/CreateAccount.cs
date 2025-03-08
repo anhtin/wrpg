@@ -51,7 +51,12 @@ public static class CreateAccount
     {
         var normalizedNickname = Nickname.Normalize(command.Nickname);
         if (!Nickname.IsValid(normalizedNickname))
-            return new() { Http = TypedResults.BadRequest(new ProblemDetails { Detail = BadNicknameMessage }) };
+        {
+            return new()
+            {
+                Http = TypedResults.BadRequest(new ProblemDetails { Detail = BadNicknameMessage })
+            };
+        }
 
         var account = Account.CreateNew(command.IdentityProvider, command.IdentityId, normalizedNickname);
         return new()

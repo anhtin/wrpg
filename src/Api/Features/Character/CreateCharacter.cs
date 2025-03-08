@@ -66,11 +66,21 @@ public static class CreateCharacter
     internal static Result ExecuteLogic(Command command, Data data)
     {
         if (!data.AccountId.HasValue)
-            return new() { Http = TypedResults.BadRequest(new ProblemDetails { Detail = MissingAccountMessage }) };
+        {
+            return new()
+            {
+                Http = TypedResults.BadRequest(new ProblemDetails { Detail = MissingAccountMessage })
+            };
+        }
 
         var normalizedName = CharacterName.Normalize(command.CharacterName);
         if (!CharacterName.IsValid(normalizedName))
-            return new() { Http = TypedResults.BadRequest(new ProblemDetails { Detail = BadCharacterNameMessage }) };
+        {
+            return new()
+            {
+                Http = TypedResults.BadRequest(new ProblemDetails { Detail = BadCharacterNameMessage })
+            };
+        }
 
         var character = Character.CreateNew(normalizedName, data.AccountId.Value);
         return new()
