@@ -1,7 +1,6 @@
-using Wrpg.IntegrationTests.Helpers;
+using Helpers;
+using Wrpg;
 using Wrpg.Shared.Database;
-
-namespace Wrpg.IntegrationTests;
 
 public class AppDbContextTest(AppDbContextFixture context) : IClassFixture<AppDbContextFixture>
 {

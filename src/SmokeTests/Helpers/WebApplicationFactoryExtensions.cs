@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Wrpg;
 
-namespace Wrpg.SmokeTests.Helpers;
+namespace Helpers;
 
 public static class WebApplicationFactoryExtensions
 {

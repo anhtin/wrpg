@@ -1,4 +1,4 @@
-﻿namespace Wrpg.SmokeTests.Helpers;
+﻿namespace Helpers;
 
 public class SmokeTestContext(Sut sut) : IClassFixture<Sut>
 {

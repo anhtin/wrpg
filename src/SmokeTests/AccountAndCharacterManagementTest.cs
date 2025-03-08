@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Helpers;
 using Microsoft.Net.Http.Headers;
-using Wrpg.SmokeTests.Helpers;
-
-namespace Wrpg.SmokeTests;
+using Wrpg;
 
 public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
 {

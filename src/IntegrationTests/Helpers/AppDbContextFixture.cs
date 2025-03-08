@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Testcontainers.PostgreSql;
 using Wrpg.Shared.Database;
 
-namespace Wrpg.IntegrationTests.Helpers;
+namespace Helpers;
 
 public class AppDbContextFixture : IAsyncLifetime
 {

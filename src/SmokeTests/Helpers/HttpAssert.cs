@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Xunit.Sdk;
 
-namespace Wrpg.SmokeTests.Helpers;
+namespace Helpers;
 
 public static class HttpAssert
 {

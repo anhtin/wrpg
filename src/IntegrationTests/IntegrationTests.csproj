@@ -6,7 +6,8 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <RootNamespace>Wrpg.IntegrationTests</RootNamespace>
+        <!--suppress CheckTagEmptyBody -->
+        <RootNamespace></RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
