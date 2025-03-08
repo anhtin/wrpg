@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Wrpg.Shared.SideEffects;
 
-namespace Wrpg.UnitTests.Shared.SideEffects;
+namespace Shared.SideEffects;
 
 public class DeleteEntityTest
 {

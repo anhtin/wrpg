@@ -1,0 +1,36 @@
+on:
+  push:
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+env:
+  DOTNET_VERSION: '9.x'
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Run unit tests
+        run: dotnet test ./src/UnitTests/ --logger "trx;LogFileName=test-results.trx"
+
+      - name: Generate unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Unit test report
+          path: ./src/UnitTests/TestResults/test-results.trx
+          reporter: dotnet-trx

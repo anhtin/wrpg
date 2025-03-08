@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Wrpg.Shared.Database;
 
-namespace Wrpg.UnitTests.Shared;
+namespace Shared;
 
 public static class AppDbContextGenerator
 {
