@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 using Wrpg.Shared.SideEffects;
 
 namespace Wrpg;
 
+[Feature]
 public static class CreateCharacter
 {
     public class Request
@@ -14,17 +17,15 @@ public static class CreateCharacter
         public required string AccountNickname { get; init; }
     }
 
-    public static TEndpointRouteBuilder MapCreateCharacterEndpoint<TEndpointRouteBuilder>(
-        this TEndpointRouteBuilder builder)
-        where TEndpointRouteBuilder : IEndpointRouteBuilder
+    [UsedImplicitly]
+    internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapPost("character", Execute)
             .WithTags(nameof(Character))
             .WithName(nameof(CreateCharacter));
-        return builder;
     }
 
-    public static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(
+    internal static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(
         [FromBody] Request body,
         AppDbContext dbContext)
     {

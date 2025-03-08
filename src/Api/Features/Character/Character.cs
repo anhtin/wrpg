@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Wrpg;
 
-public sealed class Character
+public sealed class Character : IEntityTypeConfiguration<Character>
 {
     public int Id { get; internal set; }
     public int AccountId { get; internal set; }
@@ -17,15 +17,15 @@ public sealed class Character
         Stats = Stats.CreateNew(),
     };
 
-    internal static void Configure(EntityTypeBuilder<Character> entity)
+    public void Configure(EntityTypeBuilder<Character> builder)
     {
-        entity.HasKey(x => x.Id);
-        entity.HasIndex(x => x.Name).IsUnique();
+        builder.HasKey(x => x.Id);
+        builder.HasIndex(x => x.Name).IsUnique();
 
-        entity.Property(x => x.Id).UseSerialColumn().ValueGeneratedOnAdd();
-        entity.Property(x => x.AccountId);
-        entity.Property(x => x.Name).IsRequired().HasMaxLength(20);
+        builder.Property(x => x.Id).UseSerialColumn().ValueGeneratedOnAdd();
+        builder.Property(x => x.AccountId);
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(20);
 
-        entity.OwnsOne(x => x.Stats, Stats.Configure);
+        builder.OwnsOne(x => x.Stats, Stats.Configure);
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Wrpg;
 
-public sealed class Account
+public sealed class Account : IEntityTypeConfiguration<Account>
 {
     public int Id { get; internal set; }
     public string IdentityProvider { get; internal set; } = null!;
@@ -17,15 +17,15 @@ public sealed class Account
         Nickname = nickname,
     };
 
-    internal static void Configure(EntityTypeBuilder<Account> entity)
+    public void Configure(EntityTypeBuilder<Account> builder)
     {
-        entity.HasKey(x => x.Id);
-        entity.HasIndex(nameof(IdentityProvider), nameof(IdentityId)).IsUnique();
-        entity.HasIndex(x => x.Nickname).IsUnique();
+        builder.HasKey(x => x.Id);
+        builder.HasIndex(nameof(IdentityProvider), nameof(IdentityId)).IsUnique();
+        builder.HasIndex(x => x.Nickname).IsUnique();
 
-        entity.Property(x => x.Id).UseSerialColumn().ValueGeneratedOnAdd();
-        entity.Property(x => x.IdentityProvider).IsRequired().HasMaxLength(50);
-        entity.Property(x => x.IdentityId).IsRequired().HasMaxLength(50);
-        entity.Property(x => x.Nickname).IsRequired().HasMaxLength(20);
+        builder.Property(x => x.Id).UseSerialColumn().ValueGeneratedOnAdd();
+        builder.Property(x => x.IdentityProvider).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.IdentityId).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.Nickname).IsRequired().HasMaxLength(20);
     }
 }

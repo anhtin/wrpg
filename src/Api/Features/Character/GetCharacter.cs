@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 
 namespace Wrpg;
 
+[Feature]
 public static class GetCharacter
 {
     public class Response
@@ -34,17 +37,15 @@ public static class GetCharacter
         public required int Energy { get; init; }
     }
 
-    public static TEndpointRouteBuilder MapGetCharacterEndpoint<TEndpointRouteBuilder>(
-        this TEndpointRouteBuilder builder)
-        where TEndpointRouteBuilder : IEndpointRouteBuilder
+    [UsedImplicitly]
+    internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapGet("character/{name}", Execute)
             .WithTags(nameof(Character))
             .WithName(nameof(GetCharacter));
-        return builder;
     }
 
-    public static async Task<Results<Ok<Response>, NotFound>> Execute(string name, AppDbContext dbContext)
+    internal static async Task<Results<Ok<Response>, NotFound>> Execute(string name, AppDbContext dbContext)
     {
         var character = await dbContext.Characters.FirstOrDefaultAsync(x => x.Name == name);
         return character is null

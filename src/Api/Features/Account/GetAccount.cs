@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 
 namespace Wrpg;
 
+[Feature]
 public static class GetAccount
 {
     public class Response
@@ -11,17 +14,15 @@ public static class GetAccount
         public required string Nickname { get; init; }
     }
 
-    public static TEndpointRouteBuilder MapGetAccountEndpoint<TEndpointRouteBuilder>(
-        this TEndpointRouteBuilder builder)
-        where TEndpointRouteBuilder : IEndpointRouteBuilder
+    [UsedImplicitly]
+    internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapGet("account/{nickname}", Execute)
             .WithTags(nameof(Account))
             .WithName(nameof(GetAccount));
-        return builder;
     }
 
-    public static async Task<Results<Ok<Response>, NotFound>> Execute(string nickname, AppDbContext dbContext)
+    internal static async Task<Results<Ok<Response>, NotFound>> Execute(string nickname, AppDbContext dbContext)
     {
         var account = await dbContext.Accounts.FirstOrDefaultAsync(x => x.Nickname == nickname);
         return account is null

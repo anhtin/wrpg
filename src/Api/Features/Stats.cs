@@ -19,10 +19,10 @@ public sealed class Stats
         };
     }
 
-    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Stats> entity) where TOwner : class
+    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Stats> builder) where TOwner : class
     {
-        entity.OwnsOne(x => x.Attributes, Attributes.Configure);
-        entity.OwnsOne(x => x.Resources, Resources.Configure);
+        builder.OwnsOne(x => x.Attributes, Attributes.Configure);
+        builder.OwnsOne(x => x.Resources, Resources.Configure);
     }
 }
 
@@ -46,14 +46,14 @@ public sealed class Attributes
         Spirit = 10,
     };
 
-    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Attributes> entity) where TOwner : class
+    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Attributes> builder) where TOwner : class
     {
-        entity.Property(x => x.Level).IsRequired();
-        entity.Property(x => x.Strength).IsRequired();
-        entity.Property(x => x.Dexterity).IsRequired();
-        entity.Property(x => x.Intelligence).IsRequired();
-        entity.Property(x => x.Constitution).IsRequired();
-        entity.Property(x => x.Spirit).IsRequired();
+        builder.Property(x => x.Level).IsRequired();
+        builder.Property(x => x.Strength).IsRequired();
+        builder.Property(x => x.Dexterity).IsRequired();
+        builder.Property(x => x.Intelligence).IsRequired();
+        builder.Property(x => x.Constitution).IsRequired();
+        builder.Property(x => x.Spirit).IsRequired();
     }
 }
 
@@ -74,9 +74,9 @@ public sealed class Resources
         };
     }
 
-    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Resources> entity) where TOwner : class
+    internal static void Configure<TOwner>(OwnedNavigationBuilder<TOwner, Resources> builder) where TOwner : class
     {
-        entity.Property(x => x.Health).IsRequired();
-        entity.Property(x => x.Energy).IsRequired();
+        builder.Property(x => x.Health).IsRequired();
+        builder.Property(x => x.Energy).IsRequired();
     }
 }

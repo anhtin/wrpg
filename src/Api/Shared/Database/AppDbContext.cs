@@ -17,8 +17,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .AddAccountEntity()
-            .AddCharacterEntity();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
     }
 }

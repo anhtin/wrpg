@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 using Wrpg.Shared.SideEffects;
 
 namespace Wrpg;
 
+[Feature]
 public static class CreateAccount
 {
     public class Request
@@ -14,14 +17,12 @@ public static class CreateAccount
         public required string Nickname { get; init; }
     }
 
-    public static TEndpointRouteBuilder MapCreateAccountEndpoint<TEndpointRouteBuilder>(
-        this TEndpointRouteBuilder builder)
-        where TEndpointRouteBuilder : IEndpointRouteBuilder
+    [UsedImplicitly]
+    internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapPost("account", Execute)
             .WithTags(nameof(Account))
             .WithName(nameof(CreateAccount));
-        return builder;
     }
 
     internal static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(

@@ -1,21 +1,22 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 using Wrpg.Shared.SideEffects;
 
 namespace Wrpg;
 
+[Feature]
 public static class DeleteAccount
 {
-    public static TEndpointRouteBuilder MapDeleteAccountEndpoint<TEndpointRouteBuilder>(
-        this TEndpointRouteBuilder builder)
-        where TEndpointRouteBuilder : IEndpointRouteBuilder
+    [UsedImplicitly]
+    internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapDelete("account/{nickname}", Execute)
             .WithTags(nameof(Account))
             .WithName(nameof(DeleteAccount));
-        return builder;
     }
 
     internal static async Task<Results<Ok, NotFound, BadRequest<ProblemDetails>>> Execute(

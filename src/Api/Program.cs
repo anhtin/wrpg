@@ -1,4 +1,5 @@
 using Wrpg;
+using Wrpg.Shared;
 using Wrpg.Shared.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +25,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapAccountEndpoints();
-app.MapCharacterEndpoints();
+app.MapFeatureEndpointsFromAssembly(typeof(Program).Assembly);
 
 
 app.Run();
