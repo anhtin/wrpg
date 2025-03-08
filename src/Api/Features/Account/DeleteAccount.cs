@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Wrpg.Shared;
 using Wrpg.Shared.Database;
@@ -19,9 +18,7 @@ public static class DeleteAccount
             .WithName(nameof(DeleteAccount));
     }
 
-    internal static async Task<Results<Ok, NotFound, BadRequest<ProblemDetails>>> Execute(
-        string nickname,
-        AppDbContext dbContext)
+    internal static async Task<Results<Ok, NotFound>> Execute(string nickname, AppDbContext dbContext)
     {
         var command = new Command { Nickname = nickname };
         var data = await LoadData(command, dbContext);
@@ -32,7 +29,7 @@ public static class DeleteAccount
 
     internal class Command
     {
-        public required string Nickname { get; set; }
+        public required string Nickname { get; init; }
     }
 
     internal static async Task<Data?> LoadData(Command command, AppDbContext dbContext)
@@ -54,8 +51,8 @@ public static class DeleteAccount
 
     internal class Data
     {
-        public required Account Account { get; set; }
-        public required IEnumerable<Character> Characters { get; set; }
+        public required Account Account { get; init; }
+        public required IEnumerable<Character> Characters { get; init; }
     }
 
     internal static Result ExecuteLogic(Data? data)
@@ -75,8 +72,8 @@ public static class DeleteAccount
 
     internal class Result
     {
-        public required Results<Ok, NotFound, BadRequest<ProblemDetails>> Http { get; set; }
-        public SideEffects? SideEffects { get; set; }
+        public required Results<Ok, NotFound> Http { get; init; }
+        public SideEffects? SideEffects { get; init; }
     }
 
     internal class SideEffects

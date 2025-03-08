@@ -84,8 +84,8 @@ public static class CreateCharacter
 
     internal class Result
     {
-        public required Results<CreatedAtRoute, BadRequest<ProblemDetails>> Http { get; set; }
-        public SideEffects? SideEffects { get; set; }
+        public required Results<CreatedAtRoute, BadRequest<ProblemDetails>> Http { get; init; }
+        public SideEffects? SideEffects { get; init; }
     }
 
     internal class SideEffects
