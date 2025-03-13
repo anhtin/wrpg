@@ -9,7 +9,10 @@ builder.Services.AddAuthentication().AddJwtBearer(JwtBearerConfiguration.Create(
 builder.Services.AddAuthorization(AuthorizationConfiguration.Configure);
 builder.Services.AddOpenApi(OpenApiConfiguration.Create(oauthOptions));
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
-    AppDbContext.Configure(builder.Configuration, optionsBuilder));
+{
+    var connectionString = builder.Configuration.GetConnectionString("Default")!;
+    AppDbContext.ConfigurePostgreSql(connectionString, optionsBuilder);
+});
 
 
 var app = builder.Build();

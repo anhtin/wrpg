@@ -11,6 +11,8 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
             .AddJsonFile("appsettings.json")
             .Build();
 
-        return new AppDbContext(AppDbContext.Configure(configuration).Options);
+        var connectionString = configuration.GetConnectionString("Default")!;
+        var dbContextOptions = AppDbContext.ConfigurePostgreSql(connectionString).Options;
+        return new AppDbContext(dbContextOptions);
     }
 }

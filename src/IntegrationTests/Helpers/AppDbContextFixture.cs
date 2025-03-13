@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Testcontainers.PostgreSql;
+﻿using Testcontainers.PostgreSql;
 using Wrpg.Shared.Database;
 
 namespace Helpers;
@@ -15,13 +13,8 @@ public class AppDbContextFixture : IAsyncLifetime
     {
         await _dbContainer.StartAsync();
         var connectionString = $"{_dbContainer.GetConnectionString()};Include Error Detail=true";
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Default"] = connectionString
-            })
-            .Build();
-        AppDbContext = new AppDbContext(AppDbContext.Configure(configuration, new DbContextOptionsBuilder()).Options);
+        var dbContextOptions = AppDbContext.ConfigurePostgreSql(connectionString).Options;
+        AppDbContext = new AppDbContext(dbContextOptions);
         await AppDbContext.Database.EnsureCreatedAsync();
     }
 
