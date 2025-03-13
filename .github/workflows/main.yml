@@ -26,6 +26,11 @@ jobs:
 
       - name: Run tests
         run: dotnet test --logger "trx;LogFileName=test-results.trx"
+        env:
+          OAuth__Authority: ${{ vars.AUTH0_AUTHORITY }}
+          OAuth__Audience: ${{ vars.AUTH0_AUDIENCE }}
+          SMOKETEST__OAUTH__ClientId: ${{ secrets.AUTH0_GITHUB_CLIENT_ID }}
+          SMOKETEST__OAUTH__ClientSecret: ${{ secrets.AUTH0_GITHUB_CLIENT_SECRET }}
 
       - name: Generate unit test report
         uses: dorny/test-reporter@v1

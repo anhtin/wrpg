@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq.Expressions;
+using System.Net;
 using System.Text.Json;
 using Xunit.Sdk;
 
@@ -14,6 +15,19 @@ public static class HttpAssert
         var errorMessage = await CreateErrorMessage(
             "Unexpected status code",
             $"{(int)expectedStatusCode} {expectedStatusCode}",
+            $"{(int)response.StatusCode} {response.StatusCode}",
+            response);
+        throw new HttpAssertException(errorMessage);
+    }
+
+    public static async Task Status(Expression<Func<HttpStatusCode, bool>> predicate, HttpResponseMessage response)
+    {
+        if (predicate.Compile().Invoke(response.StatusCode))
+            return;
+
+        var errorMessage = await CreateErrorMessage(
+            "Unexpected status code",
+            $"{predicate}",
             $"{(int)response.StatusCode} {response.StatusCode}",
             response);
         throw new HttpAssertException(errorMessage);

@@ -2,3 +2,4 @@ postgres_data/
 obj/
 bin/
 *.DotSettings.user
+secrets.json

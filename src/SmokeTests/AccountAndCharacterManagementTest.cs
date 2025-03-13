@@ -4,7 +4,7 @@ using Helpers;
 using Microsoft.Net.Http.Headers;
 using Wrpg;
 
-public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
+public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut), IAsyncLifetime
 {
     [Fact]
     public async Task Can_create_and_view_and_delete_account_and_characters()
@@ -29,7 +29,7 @@ public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
 
     private async Task CreateAccount(string identityProvider, string identityId, string nickname)
     {
-        var response = await HttpClient.PostAsJsonAsync(
+        var response = await FullyAuthorizedClient.PostAsJsonAsync(
             "account",
             new CreateAccount.Request
             {
@@ -39,13 +39,13 @@ public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
             });
 
         await HttpAssert.Status(HttpStatusCode.Created, response);
-        var expectedLocation = $"{HttpClient.BaseAddress}account/{nickname}";
+        var expectedLocation = $"{FullyAuthorizedClient.BaseAddress}account/{nickname}";
         await HttpAssert.Header(HeaderNames.Location, expectedLocation, response);
     }
 
     private async Task AssertAccountExists(string nickname)
     {
-        var response = await HttpClient.GetAsync($"account/{nickname}");
+        var response = await FullyAuthorizedClient.GetAsync($"account/{nickname}");
 
         var jsonOptions = Sut.GetJsonSerializerOptions();
         await HttpAssert.Status(HttpStatusCode.OK, response);
@@ -57,25 +57,25 @@ public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
 
     private async Task AssertAccountNotExists(string nickname)
     {
-        var response = await HttpClient.GetAsync($"account/{nickname}");
+        var response = await FullyAuthorizedClient.GetAsync($"account/{nickname}");
         await HttpAssert.Status(HttpStatusCode.NotFound, response);
     }
 
     private async Task DeleteAccount(string nickname)
     {
-        var response = await HttpClient.DeleteAsync($"account/{nickname}");
+        var response = await FullyAuthorizedClient.DeleteAsync($"account/{nickname}");
         await HttpAssert.Status(HttpStatusCode.OK, response);
     }
 
     private async Task CreateCharacter(string characterName, string accountNickname)
     {
-        await HttpClient.PostAsJsonAsync("account", new CreateAccount.Request
+        await FullyAuthorizedClient.PostAsJsonAsync("account", new CreateAccount.Request
         {
             IdentityProvider = "IP",
             IdentityId = "ID",
             Nickname = accountNickname
         });
-        var response = await HttpClient.PostAsJsonAsync(
+        var response = await FullyAuthorizedClient.PostAsJsonAsync(
             "character",
             new CreateCharacter.Request
             {
@@ -84,19 +84,19 @@ public class AccountAndCharacterManagementTest(Sut sut) : SmokeTestContext(sut)
             });
 
         await HttpAssert.Status(HttpStatusCode.Created, response);
-        var expectedLocation = $"{HttpClient.BaseAddress}character/{characterName}";
+        var expectedLocation = $"{FullyAuthorizedClient.BaseAddress}character/{characterName}";
         await HttpAssert.Header(HeaderNames.Location, expectedLocation, response);
     }
 
     private async Task AssertCharacterExists(string name)
     {
-        var response = await HttpClient.GetAsync($"character/{name}");
+        var response = await FullyAuthorizedClient.GetAsync($"character/{name}");
         await HttpAssert.Status(HttpStatusCode.OK, response);
     }
 
     private async Task AssertCharacterNotExists(string name)
     {
-        var response = await HttpClient.GetAsync($"character/{name}");
+        var response = await FullyAuthorizedClient.GetAsync($"character/{name}");
         await HttpAssert.Status(HttpStatusCode.NotFound, response);
     }
 }

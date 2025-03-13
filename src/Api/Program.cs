@@ -4,29 +4,29 @@ using Wrpg.Shared.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+var oauthOptions = OauthOptions.CreateFrom(builder.Configuration);
+builder.Services.AddAuthentication().AddJwtBearer(JwtBearerConfiguration.Create(oauthOptions));
+builder.Services.AddAuthorization(AuthorizationConfiguration.Configure);
+builder.Services.AddOpenApi(OpenApiConfiguration.Create(oauthOptions));
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
     AppDbContext.Configure(builder.Configuration, optionsBuilder));
 
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.UseExceptionHandler(CustomExceptionHandler.CreateOptions(app.Environment.IsDevelopment()));
-
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(options =>
-    {
-        options.RoutePrefix = "docs";
-        options.SwaggerEndpoint("/openapi/v1.json", "API Spec");
-    });
+    var swaggerUiOptions = SwaggerOptions.CreateFrom(builder.Configuration);
+    app.UseSwaggerUI(SwaggerConfiguration.Create(swaggerUiOptions));
+    app.MapOpenApi().AllowAnonymous();
 }
 
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseExceptionHandler(CustomExceptionHandler.CreateOptions(app.Environment.IsDevelopment()));
 
 app.MapFeatureEndpointsFromAssembly(typeof(Program).Assembly);
-
 
 app.Run();
 
