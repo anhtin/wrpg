@@ -7,7 +7,7 @@ using Npgsql;
 
 namespace Wrpg;
 
-using HttpResult = Results<CreatedAtRoute, BadRequest<ProblemDetails>, Conflict>;
+using HttpResult = Results<CreatedAtRoute, Conflict>;
 
 [Feature]
 public static class CreateCharacter
