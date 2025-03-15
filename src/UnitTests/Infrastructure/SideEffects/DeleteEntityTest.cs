@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Wrpg.Shared.SideEffects;
+using Wrpg;
 
 namespace Infrastructure.SideEffects;
 

@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Wrpg.Shared.Database;
+using Wrpg;
 
 #nullable disable
 
-namespace Wrpg.Shared.Database.Migrations
+namespace Wrpg.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250315164058_Initial")]
+    [Migration("20250315165925_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

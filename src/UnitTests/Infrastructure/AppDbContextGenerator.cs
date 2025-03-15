@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Wrpg.Shared.Database;
+using Wrpg;
 
 namespace Infrastructure;
 

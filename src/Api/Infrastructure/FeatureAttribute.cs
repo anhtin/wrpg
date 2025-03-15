@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Wrpg.Shared;
+namespace Wrpg;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class FeatureAttribute : Attribute;

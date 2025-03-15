@@ -1,6 +1,4 @@
-﻿using Wrpg.Shared.Database;
-
-namespace Wrpg.Shared.SideEffects;
+﻿namespace Wrpg;
 
 public record DeleteEntity<TEntity>(TEntity Entity) where TEntity : class
 {

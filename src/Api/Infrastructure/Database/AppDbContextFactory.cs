@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 
-namespace Wrpg.Shared.Database;
+namespace Wrpg;
 
 public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {

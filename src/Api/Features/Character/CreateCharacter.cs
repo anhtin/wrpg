@@ -2,9 +2,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Wrpg.Shared;
-using Wrpg.Shared.Database;
-using Wrpg.Shared.SideEffects;
 
 namespace Wrpg;
 

@@ -1,7 +1,6 @@
 using Helpers;
 using Microsoft.EntityFrameworkCore;
 using Wrpg;
-using Wrpg.Shared.Database;
 
 public class AppDbContextTest(AppDbContextFixture context) : IClassFixture<AppDbContextFixture>
 {

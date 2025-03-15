@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Wrpg.Shared;
+namespace Wrpg;
 
 public static class CustomTypedResults
 {

@@ -1,5 +1,5 @@
 ﻿using Testcontainers.PostgreSql;
-using Wrpg.Shared.Database;
+using Wrpg;
 
 namespace Helpers;
 

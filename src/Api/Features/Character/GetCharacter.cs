@@ -2,8 +2,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Wrpg.Shared;
-using Wrpg.Shared.Database;
 
 namespace Wrpg;
 

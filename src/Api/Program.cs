@@ -1,6 +1,4 @@
 using Wrpg;
-using Wrpg.Shared;
-using Wrpg.Shared.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 using Wrpg;
-using Wrpg.Shared.Database;
 
 namespace Helpers;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Wrpg.Shared.Database;
+namespace Wrpg;
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {

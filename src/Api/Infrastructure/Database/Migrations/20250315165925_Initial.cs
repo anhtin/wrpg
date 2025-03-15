@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Wrpg.Shared.Database.Migrations
+namespace Wrpg.Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
