@@ -14,10 +14,31 @@ public class CharacterNameTest
     }
 
     [Theory]
+    [InlineData("UPPER")]
     [InlineData("Capital")]
-    [InlineData("s p a c e")]
-    [InlineData("$ymbols")]
-    public void IsValid_returns_false_when_CharacterName_contains_invalid_characters(string name)
+    public void IsValid_returns_false_when_name_contains_uppercase_letters(string name) => AssertInvalid(name);
+
+    [Theory]
+    [InlineData(" leading")]
+    [InlineData("trailing ")]
+    [InlineData("mid dle")]
+    public void IsValid_returns_false_when_name_contains_space_character(string name) => AssertInvalid(name);
+
+    [Theory]
+    [InlineData("!")]
+    [InlineData("@")]
+    [InlineData("#")]
+    [InlineData("$")]
+    [InlineData("%")]
+    [InlineData("^")]
+    [InlineData("&")]
+    [InlineData("*")]
+    [InlineData("(")]
+    [InlineData(")")]
+    [InlineData("+")]
+    public void IsValid_returns_false_when_name_contains_special_symbol(string name) => AssertInvalid(name);
+
+    private void AssertInvalid(string name)
     {
         var result = CharacterName.IsValid(name);
         Assert.False(result);
