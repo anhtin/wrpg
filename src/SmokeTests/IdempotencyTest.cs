@@ -6,7 +6,7 @@ using Wrpg;
 public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
 {
     [Fact]
-    public async Task Responds_with_201_Created_when_request_is_identical()
+    public async Task CreateCharacter_succeeds_when_subsequent_request_is_identical()
     {
         var idempotencyKey = Guid.NewGuid();
         const string name = "dylan";
@@ -16,7 +16,7 @@ public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
     }
 
     [Fact]
-    public async Task Responds_with_409_Conflict_when_request_is_different_but_idempotency_key_is_identical()
+    public async Task CreateCharacter_fails_when_subsequent_request_is_different_but_idempotency_key_is_identical()
     {
         var idempotencyKey = Guid.NewGuid();
         await CreateCharacter(FullyAuthorizedClient, idempotencyKey, "dylan");
