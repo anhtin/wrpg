@@ -7,7 +7,7 @@ namespace Features.Character;
 public class CreateCharacterTest
 {
     [Fact]
-    public void Succeeds_when_all_is_good()
+    public void Succeeds()
     {
         var command = CreateCommand();
         var result = CreateCharacter.ExecuteLogic(command);
@@ -20,7 +20,7 @@ public class CreateCharacterTest
                     () => Assert.Equal(nameof(GetCharacter), subject.RouteName),
                     () =>
                     {
-                        var expected = new KeyValuePair<string, object?>("Name", command.CharacterName);
+                        var expected = new KeyValuePair<string, object?>("Id", command.CharacterId);
                         Assert.Contains(expected, subject.RouteValues);
                     });
             },
@@ -33,6 +33,7 @@ public class CreateCharacterTest
                     () =>
                     {
                         var expected = new CreateEntity<Wrpg.Character>(CharacterGenerator.Create(
+                            id: command.CharacterId,
                             userId: command.UserId,
                             name: command.CharacterName,
                             stats: Stats.CreateNew()));
@@ -41,44 +42,12 @@ public class CreateCharacterTest
             });
     }
 
-    [Fact]
-    public void Normalizes_character_name_on_success()
-    {
-        var command = CreateCommand(characterName: "SHOULD-BE-LOWERCASE");
-        var result = CreateCharacter.ExecuteLogic(command);
-
-        var subject = result.SideEffects!.CreateCharacter.Entity.Name;
-        Assert.Equal("should-be-lowercase", subject);
-    }
-
-    [Fact]
-    public void Fails_when_character_name_is_invalid()
-    {
-        const string characterName = "Invalid character name";
-        Assert.False(Wrpg.CharacterName.IsValid(characterName));
-
-        var command = CreateCommand(characterName: characterName);
-        var result = CreateCharacter.ExecuteLogic(command);
-
-        Assert.Multiple(
-            () =>
-            {
-                var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
-                var expected = CreateCharacter.BadCharacterNameMessage;
-                Assert.NotNull(subject.Value);
-                Assert.Equal(expected, subject.Value.Detail);
-            },
-            () =>
-            {
-                var subject = result.SideEffects;
-                Assert.Null(subject);
-            });
-    }
-
     private static CreateCharacter.Command CreateCommand(
+        Guid? characterId = null,
         string? characterName = null,
         string? userId = null) => new()
     {
+        CharacterId = characterId ?? Guid.NewGuid(),
         CharacterName = characterName ?? Generator.RandomString(),
         UserId = userId ?? Generator.RandomString(),
     };

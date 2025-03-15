@@ -12,21 +12,21 @@ public static class DeleteCharacter
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("character/{name}", Execute)
+        builder.MapDelete("character/{id}", Execute)
             .WithTags(nameof(Character))
             .WithName(nameof(DeleteCharacter));
     }
 
     internal static async Task<Results<Ok, NotFound>> Execute(
-        string name,
+        Guid id,
         ClaimsPrincipal user,
         AppDbContext dbContext)
     {
         var userId = UserId.ResolveFrom(user);
         var command = new Command
         {
+            CharacterId = id,
             UserId = userId,
-            CharacterName = name,
         };
         var data = await LoadData(command, dbContext);
         var result = ExecuteLogic(data);
@@ -36,8 +36,8 @@ public static class DeleteCharacter
 
     internal class Command
     {
+        public required Guid CharacterId { get; init; }
         public required string UserId { get; init; }
-        public required string CharacterName { get; init; }
     }
 
     internal class Data
@@ -48,7 +48,7 @@ public static class DeleteCharacter
     internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
     {
         var character = await dbContext.Characters
-            .SingleOrDefaultAsync(x => x.UserId == command.UserId && x.Name == command.CharacterName);
+            .SingleOrDefaultAsync(x => x.Id == command.CharacterId && x.UserId == command.UserId);
 
         return new() { Character = character };
     }

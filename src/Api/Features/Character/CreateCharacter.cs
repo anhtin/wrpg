@@ -18,14 +18,17 @@ public static class CreateCharacter
 
     internal static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(
         [FromBody] Request body,
+        [FromHeader(Name = CustomHttpHeader.IdempotencyKey)]
+        Guid idempotencyKey,
         ClaimsPrincipal user,
         AppDbContext dbContext)
     {
         var userId = UserId.ResolveFrom(user);
         var command = new Command
         {
-            UserId = userId,
+            CharacterId = idempotencyKey,
             CharacterName = body.CharacterName,
+            UserId = userId,
         };
         var result = ExecuteLogic(command);
         await ExecuteSideEffects(result.SideEffects, dbContext);
@@ -39,28 +42,23 @@ public static class CreateCharacter
 
     internal class Command
     {
-        public required string UserId { get; init; }
+        public required Guid CharacterId { get; init; }
         public required string CharacterName { get; init; }
+        public required string UserId { get; init; }
     }
 
     internal static Result ExecuteLogic(Command command)
     {
-        var normalizedName = CharacterName.Normalize(command.CharacterName);
-        if (!CharacterName.IsValid(normalizedName))
-            return new() { Http = CustomTypedResults.BadRequest(BadCharacterNameMessage) };
-
-        var character = Character.CreateNew(normalizedName, command.UserId);
+        var character = Character.CreateNew(command.CharacterId, command.CharacterName, command.UserId);
         return new()
         {
-            Http = TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Name = character.Name }),
+            Http = TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Id = character.Id }),
             SideEffects = new()
             {
                 CreateCharacter = new CreateEntity<Character>(character),
             },
         };
     }
-
-    internal const string BadCharacterNameMessage = $"Character name must match '{CharacterName.Pattern}'";
 
     internal class Result
     {

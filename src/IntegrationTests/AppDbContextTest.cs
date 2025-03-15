@@ -19,24 +19,28 @@ public class AppDbContextTest(AppDbContextFixture context) : IClassFixture<AppDb
         const string userId = "some-user";
         var character1 = new Character
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             Name = "big-dylan",
             Stats = Stats.CreateNew(),
         };
         var character2 = new Character
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             Name = "amazing-dylan",
             Stats = Stats.CreateNew(),
         };
         var character3 = new Character
         {
+            Id = Guid.NewGuid(),
             UserId = "some-other-user",
             Name = "not-dylan",
             Stats = Stats.CreateNew(),
         };
         var character4 = new Character
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             Name = "lazy-dylan",
             Stats = Stats.CreateNew(),

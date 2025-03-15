@@ -9,11 +9,7 @@ public class AuthenticationTest(Sut sut) : SmokeTestContext(sut)
     public async Task Accepts_authenticated_request()
     {
         var response = await CreateCharacter(FullyAuthorizedClient);
-
-        await HttpAssert.Status(
-            statusCode => statusCode != HttpStatusCode.Unauthorized &&
-                          statusCode != HttpStatusCode.Forbidden,
-            response);
+        await HttpAssert.Status(HttpStatusCode.Created, response);
     }
 
     [Fact]
@@ -26,8 +22,8 @@ public class AuthenticationTest(Sut sut) : SmokeTestContext(sut)
 
     private static async Task<HttpResponseMessage> CreateCharacter(HttpClient client)
     {
-        return await client.PostAsJsonAsync(
-            "character",
-            new CreateCharacter.Request { CharacterName = "dylan" });
+        var request = JsonContent.Create(new CreateCharacter.Request { CharacterName = "dylan" });
+        request.Headers.Add(CustomHttpHeader.IdempotencyKey, Guid.NewGuid().ToString());
+        return await client.PostAsync("character", request);
     }
 }

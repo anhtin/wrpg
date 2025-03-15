@@ -11,18 +11,18 @@ public static class GetCharacter
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("character/{name}", Execute)
+        builder.MapGet("character/{id}", Execute)
             .WithTags(nameof(Character))
             .WithName(nameof(GetCharacter));
     }
 
     internal static async Task<Results<Ok<Response>, NotFound>> Execute(
-        string name,
+        Guid id,
         ClaimsPrincipal user,
         AppDbContext dbContext)
     {
         var userId = UserId.ResolveFrom(user);
-        var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.UserId == userId && x.Name == name);
+        var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
         return character is null
             ? TypedResults.NotFound()
             : TypedResults.Ok<Response>(new()

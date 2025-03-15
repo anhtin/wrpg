@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -23,9 +24,14 @@ public static class CustomExceptionHandler
                 break;
             }
 
+            case BadHttpRequestException:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new ProblemDetails { Detail = exception.Message });
+                break;
+
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                if (isDevelopment) await context.Response.WriteAsync(exception.ToString());
+                if (isDevelopment) await context.Response.WriteAsJsonAsync(exception.ToString());
                 break;
         }
     };
