@@ -23,10 +23,11 @@ public static class OpenApiConfiguration
     {
         var scheme = new OpenApiSecurityScheme
         {
-            Type = SecuritySchemeType.OAuth2, BearerFormat = "JWT",
+            Type = SecuritySchemeType.OAuth2,
+            BearerFormat = "JWT",
             Flows = new OpenApiOAuthFlows
             {
-                Implicit = new OpenApiOAuthFlow
+                AuthorizationCode = new OpenApiOAuthFlow
                 {
                     AuthorizationUrl = new Uri(authorizationUrl),
                     TokenUrl = new Uri(tokenUrl),
