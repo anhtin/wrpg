@@ -42,9 +42,9 @@ public class CreateCharacterTest
     }
 
     [Fact]
-    public void Fails_when_character_name_is_bad()
+    public void Fails_when_character_name_is_invalid()
     {
-        var characterName = "Invalid character name";
+        const string characterName = "Invalid character name";
         Assert.False(CharacterName.IsValid(characterName));
 
         var command = CreateCommand(characterName: characterName);

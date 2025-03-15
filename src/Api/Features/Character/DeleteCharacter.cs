@@ -17,7 +17,7 @@ public static class DeleteCharacter
             .WithName(nameof(DeleteCharacter));
     }
 
-    internal static async Task<Results<Ok, BadRequest<ProblemDetails>, NotFound>> Execute(
+    internal static async Task<Results<Ok, NotFound>> Execute(
         string name,
         ClaimsPrincipal user,
         AppDbContext dbContext)
@@ -29,7 +29,7 @@ public static class DeleteCharacter
             CharacterName = name,
         };
         var data = await LoadData(command, dbContext);
-        var result = ExecuteLogic(command, data);
+        var result = ExecuteLogic(data);
         await ExecuteSideEffects(result.SideEffects, dbContext);
         return result.Http;
     }
@@ -53,12 +53,8 @@ public static class DeleteCharacter
         return new() { Character = character };
     }
 
-    internal static Result ExecuteLogic(Command command, Data data)
+    internal static Result ExecuteLogic(Data data)
     {
-        var normalizedName = CharacterName.Normalize(command.CharacterName);
-        if (!CharacterName.IsValid(normalizedName))
-            return new() { Http = CustomTypedResults.BadRequest(BadCharacterNameMessage) };
-
         if (data.Character is null)
             return new() { Http = TypedResults.NotFound() };
 
@@ -72,11 +68,9 @@ public static class DeleteCharacter
         };
     }
 
-    internal const string BadCharacterNameMessage = $"Character name must match '{CharacterName.Pattern}'";
-
     internal class Result
     {
-        public required Results<Ok, BadRequest<ProblemDetails>, NotFound> Http { get; init; }
+        public required Results<Ok, NotFound> Http { get; init; }
         public SideEffects? SideEffects { get; init; }
     }
 
