@@ -42,6 +42,16 @@ public class CreateCharacterTest
     }
 
     [Fact]
+    public void Normalizes_character_name_on_success()
+    {
+        var command = CreateCommand(characterName: "SHOULD-BE-LOWERCASE");
+        var result = CreateCharacter.ExecuteLogic(command);
+
+        var subject = result.SideEffects!.CreateCharacter.Entity.Name;
+        Assert.Equal("should-be-lowercase", subject);
+    }
+
+    [Fact]
     public void Fails_when_character_name_is_invalid()
     {
         const string characterName = "Invalid character name";
