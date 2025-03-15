@@ -11,7 +11,7 @@ using Wrpg.Shared.Database;
 namespace Wrpg.Shared.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250307213340_Initial")]
+    [Migration("20250315164058_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,40 +24,6 @@ namespace Wrpg.Shared.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Wrpg.Account", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("IdentityId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("IdentityProvider")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Nickname")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Nickname")
-                        .IsUnique();
-
-                    b.HasIndex("IdentityProvider", "IdentityId")
-                        .IsUnique();
-
-                    b.ToTable("Accounts");
-                });
-
             modelBuilder.Entity("Wrpg.Character", b =>
                 {
                     b.Property<int>("Id")
@@ -66,18 +32,22 @@ namespace Wrpg.Shared.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Characters");
                 });

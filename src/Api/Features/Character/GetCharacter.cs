@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Security.Claims;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Wrpg.Shared;
@@ -17,9 +18,13 @@ public static class GetCharacter
             .WithName(nameof(GetCharacter));
     }
 
-    internal static async Task<Results<Ok<Response>, NotFound>> Execute(string name, AppDbContext dbContext)
+    internal static async Task<Results<Ok<Response>, NotFound>> Execute(
+        string name,
+        ClaimsPrincipal user,
+        AppDbContext dbContext)
     {
-        var character = await dbContext.Characters.FirstOrDefaultAsync(x => x.Name == name);
+        var userId = UserId.ResolveFrom(user);
+        var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.UserId == userId && x.Name == name);
         return character is null
             ? TypedResults.NotFound()
             : TypedResults.Ok<Response>(new()

@@ -1,4 +1,5 @@
 using Helpers;
+using Microsoft.EntityFrameworkCore;
 using Wrpg;
 using Wrpg.Shared.Database;
 
@@ -13,61 +14,49 @@ public class AppDbContextTest(AppDbContextFixture context) : IClassFixture<AppDb
     }
 
     [Fact]
-    public async Task Can_load_Account_along_with_related_Characters()
+    public async Task Can_retrieve_all_character_related_to_user()
     {
-        var account = new Account
-        {
-            Id = 3,
-            IdentityProvider = "IP",
-            IdentityId = "ID",
-            Nickname = "dylan",
-        };
+        // Arrange
+        const string userId = "some-user";
         var character1 = new Character
         {
-            AccountId = account.Id,
+            UserId = userId,
             Name = "big-dylan",
             Stats = Stats.CreateNew(),
         };
         var character2 = new Character
         {
-            AccountId = account.Id,
+            UserId = userId,
             Name = "amazing-dylan",
             Stats = Stats.CreateNew(),
         };
         var character3 = new Character
         {
-            AccountId = 4,
+            UserId = "some-other-user",
             Name = "not-dylan",
             Stats = Stats.CreateNew(),
         };
         var character4 = new Character
         {
-            AccountId = account.Id,
+            UserId = userId,
             Name = "lazy-dylan",
             Stats = Stats.CreateNew(),
         };
 
-        Sut.Accounts.Add(account);
         Sut.Characters.Add(character1);
         Sut.Characters.Add(character2);
         Sut.Characters.Add(character3);
         Sut.Characters.Add(character4);
         await Sut.SaveChangesAsync();
 
-        var data = await DeleteAccount.LoadData(
-            new DeleteAccount.Command
-            {
-                Nickname = account.Nickname,
-            },
-            Sut);
+        // Act
+        var characters = await Sut.Characters.Where(x => x.UserId == userId).ToArrayAsync();
 
-        Assert.NotNull(data);
-        Assert.Multiple(
-            () => Assert.Equal(account, data.Account),
-            () => Assert.Collection(
-                data.Characters,
-                x => Assert.Equal(character1, x),
-                x => Assert.Equal(character2, x),
-                x => Assert.Equal(character4, x)));
+        // Assert
+        Assert.Collection(
+            characters,
+            x => Assert.Equal(character1, x),
+            x => Assert.Equal(character2, x),
+            x => Assert.Equal(character4, x));
     }
 }

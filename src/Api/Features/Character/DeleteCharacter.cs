@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Wrpg.Shared;
 using Wrpg.Shared.Database;
 using Wrpg.Shared.SideEffects;
@@ -9,18 +10,18 @@ using Wrpg.Shared.SideEffects;
 namespace Wrpg;
 
 [Feature]
-public static class CreateCharacter
+public static class DeleteCharacter
 {
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
-        builder.MapPost("character", Execute)
+        builder.MapDelete("character/{name}", Execute)
             .WithTags(nameof(Character))
-            .WithName(nameof(CreateCharacter));
+            .WithName(nameof(DeleteCharacter));
     }
 
-    internal static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(
-        [FromBody] Request body,
+    internal static async Task<Results<Ok, BadRequest<ProblemDetails>, NotFound>> Execute(
+        string name,
         ClaimsPrincipal user,
         AppDbContext dbContext)
     {
@@ -28,16 +29,12 @@ public static class CreateCharacter
         var command = new Command
         {
             UserId = userId,
-            CharacterName = body.CharacterName,
+            CharacterName = name,
         };
-        var result = ExecuteLogic(command);
+        var data = await LoadData(command, dbContext);
+        var result = ExecuteLogic(command, data);
         await ExecuteSideEffects(result.SideEffects, dbContext);
         return result.Http;
-    }
-
-    public class Request
-    {
-        public required string CharacterName { get; init; }
     }
 
     internal class Command
@@ -46,19 +43,34 @@ public static class CreateCharacter
         public required string CharacterName { get; init; }
     }
 
-    internal static Result ExecuteLogic(Command command)
+    internal class Data
+    {
+        public required Character? Character { get; init; }
+    }
+
+    internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
+    {
+        var character = await dbContext.Characters
+            .SingleOrDefaultAsync(x => x.UserId == command.UserId && x.Name == command.CharacterName);
+
+        return new() { Character = character };
+    }
+
+    internal static Result ExecuteLogic(Command command, Data data)
     {
         var normalizedName = CharacterName.Normalize(command.CharacterName);
         if (!CharacterName.IsValid(normalizedName))
             return new() { Http = CustomTypedResults.BadRequest(BadCharacterNameMessage) };
 
-        var character = Character.CreateNew(normalizedName, command.UserId);
+        if (data.Character is null)
+            return new() { Http = TypedResults.NotFound() };
+
         return new()
         {
-            Http = TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Name = character.Name }),
+            Http = TypedResults.Ok(),
             SideEffects = new()
             {
-                CreateCharacter = new CreateEntity<Character>(character),
+                DeleteCharacter = new DeleteEntity<Character>(data.Character),
             },
         };
     }
@@ -67,20 +79,20 @@ public static class CreateCharacter
 
     internal class Result
     {
-        public required Results<CreatedAtRoute, BadRequest<ProblemDetails>> Http { get; init; }
+        public required Results<Ok, BadRequest<ProblemDetails>, NotFound> Http { get; init; }
         public SideEffects? SideEffects { get; init; }
     }
 
     internal class SideEffects
     {
-        public required CreateEntity<Character> CreateCharacter { get; init; }
+        public required DeleteEntity<Character> DeleteCharacter { get; init; }
     }
 
     internal static async Task ExecuteSideEffects(SideEffects? sideEffects, AppDbContext dbContext)
     {
         if (sideEffects is null) return;
 
-        sideEffects.CreateCharacter.Execute(dbContext);
+        sideEffects.DeleteCharacter.Execute(dbContext);
         await dbContext.SaveChangesAsync();
     }
 }

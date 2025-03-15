@@ -10,10 +10,8 @@ public class CreateCharacterTest
     [Fact]
     public void Succeeds_when_all_is_good()
     {
-        var command = CreateCommand(characterName: Generator.RandomString());
-        var data = CreateData(accountId: Generator.RandomInt());
-
-        var result = CreateCharacter.ExecuteLogic(command, data);
+        var command = CreateCommand();
+        var result = CreateCharacter.ExecuteLogic(command);
 
         Assert.Multiple(
             () =>
@@ -36,8 +34,8 @@ public class CreateCharacterTest
                     () =>
                     {
                         var expected = new CreateEntity<Wrpg.Character>(CharacterGenerator.Create(
+                            userId: command.UserId,
                             name: command.CharacterName,
-                            accountId: data.AccountId,
                             stats: Stats.CreateNew()));
                         Assert.Equivalent(expected, subject.CreateCharacter);
                     });
@@ -45,44 +43,19 @@ public class CreateCharacterTest
     }
 
     [Fact]
-    public void Fails_when_AccountId_is_null()
-    {
-        var command = CreateCommand();
-        var data = CreateData(accountId: null);
-
-        var result = CreateCharacter.ExecuteLogic(command, data);
-
-        Assert.Multiple(
-            () =>
-            {
-                var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
-                var expected = CreateCharacter.MissingAccountMessage;
-                Assert.NotNull(subject.Value);
-                Assert.Equal(expected, subject.Value.Detail);
-            },
-            () =>
-            {
-                var subject = result.SideEffects;
-                Assert.Null(subject);
-            });
-    }
-
-    [Fact]
-    public void Fails_when_CharacterName_is_bad()
+    public void Fails_when_character_name_is_bad()
     {
         var characterName = "Invalid character name";
         Assert.False(CharacterName.IsValid(characterName));
 
         var command = CreateCommand(characterName: characterName);
-        var data = CreateData();
-
-        var result = CreateCharacter.ExecuteLogic(command, data);
+        var result = CreateCharacter.ExecuteLogic(command);
 
         Assert.Multiple(
             () =>
             {
                 var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
-                var expected = CreateCharacter.MissingAccountMessage;
+                var expected = CreateCharacter.BadCharacterNameMessage;
                 Assert.NotNull(subject.Value);
                 Assert.Equal(expected, subject.Value.Detail);
             },
@@ -93,14 +66,11 @@ public class CreateCharacterTest
             });
     }
 
-    private static CreateCharacter.Command CreateCommand(string? characterName = null) => new()
+    private static CreateCharacter.Command CreateCommand(
+        string? characterName = null,
+        string? userId = null) => new()
     {
         CharacterName = characterName ?? Generator.RandomString(),
-        AccountNickname = null!,
-    };
-
-    private static CreateCharacter.Data CreateData(int? accountId = null) => new()
-    {
-        AccountId = accountId,
+        UserId = userId ?? Generator.RandomString(),
     };
 }
