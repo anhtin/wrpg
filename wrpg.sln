@@ -19,6 +19,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		secrets.json = secrets.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{AE0972EE-03B3-40C0-A1F0-A71F34F219AD}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{27F496BE-F68D-4726-80F7-C600F18549E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,5 +53,7 @@ Global
 		{900A9B86-5716-4E94-AFD2-11C94074A39F} = {F2169ED8-3E5E-4D03-8BCB-6CDF77788829}
 		{1D640884-FDFE-455F-9B7A-1058D97D93C2} = {F2169ED8-3E5E-4D03-8BCB-6CDF77788829}
 		{887D0DEF-0250-449E-9216-D803396F6AE1} = {F2169ED8-3E5E-4D03-8BCB-6CDF77788829}
+		{AE0972EE-03B3-40C0-A1F0-A71F34F219AD} = {E3B82D35-EBD1-481F-899D-C8D21083DDB3}
+		{27F496BE-F68D-4726-80F7-C600F18549E7} = {AE0972EE-03B3-40C0-A1F0-A71F34F219AD}
 	EndGlobalSection
 EndGlobal
