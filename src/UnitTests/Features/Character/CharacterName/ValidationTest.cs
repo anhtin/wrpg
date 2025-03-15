@@ -1,15 +1,13 @@
-﻿using Wrpg;
+﻿namespace Features.Character.CharacterName;
 
-namespace Features.Character;
-
-public class CharacterNameTest
+public class ValidationTest
 {
     [Theory]
     [InlineData("nickname-with-hyphens")]
     [InlineData("nickname_with_underscore")]
     public void IsValid_returns_true_when_name_is_valid(string name)
     {
-        var result = CharacterName.IsValid(name);
+        var result = Wrpg.CharacterName.IsValid(name);
         Assert.True(result);
     }
 
@@ -40,16 +38,7 @@ public class CharacterNameTest
 
     private void AssertInvalid(string name)
     {
-        var result = CharacterName.IsValid(name);
+        var result = Wrpg.CharacterName.IsValid(name);
         Assert.False(result);
-    }
-
-    [Theory]
-    [InlineData("UPPER", "upper")]
-    [InlineData("Capital_Letters", "capital_letters")]
-    public void Normalize_returns_CharacterName_in_all_lowercase(string name, string expected)
-    {
-        var actual = CharacterName.Normalize(name);
-        Assert.Equal(expected, actual);
     }
 }

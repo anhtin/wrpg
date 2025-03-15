@@ -45,7 +45,7 @@ public class CreateCharacterTest
     public void Fails_when_character_name_is_invalid()
     {
         const string characterName = "Invalid character name";
-        Assert.False(CharacterName.IsValid(characterName));
+        Assert.False(Wrpg.CharacterName.IsValid(characterName));
 
         var command = CreateCommand(characterName: characterName);
         var result = CreateCharacter.ExecuteLogic(command);
