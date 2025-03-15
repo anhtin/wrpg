@@ -17,8 +17,10 @@ public static class CustomExceptionHandler
         var exception = context.Features.Get<IExceptionHandlerFeature>()!.Error;
         switch (exception)
         {
-            case DbUpdateException { InnerException: PostgresException postgresException }
-                when postgresException.Message.StartsWith("23505: duplicate key value violates unique constraint"):
+            case DbUpdateException
+            {
+                InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation }
+            }:
             {
                 context.Response.StatusCode = StatusCodes.Status409Conflict;
                 break;

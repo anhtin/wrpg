@@ -2,8 +2,12 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Wrpg;
+
+using HttpResult = Results<CreatedAtRoute, BadRequest<ProblemDetails>, Conflict>;
 
 [Feature]
 public static class CreateCharacter
@@ -16,7 +20,7 @@ public static class CreateCharacter
             .WithName(nameof(CreateCharacter));
     }
 
-    internal static async Task<Results<CreatedAtRoute, BadRequest<ProblemDetails>>> Execute(
+    internal static async Task<HttpResult> Execute(
         [FromBody] Request body,
         [FromHeader(Name = CustomHttpHeader.IdempotencyKey)]
         Guid idempotencyKey,
@@ -31,7 +35,17 @@ public static class CreateCharacter
             UserId = userId,
         };
         var result = ExecuteLogic(command);
-        await ExecuteSideEffects(result.SideEffects, dbContext);
+        try
+        {
+            await ExecuteSideEffects(result.SideEffects, dbContext);
+        }
+        catch (Exception e)
+        {
+            var overridingHttpResult = await HandleException(command, e, dbContext);
+            if (overridingHttpResult is not null) return overridingHttpResult;
+            throw;
+        }
+
         return result.Http;
     }
 
@@ -62,7 +76,7 @@ public static class CreateCharacter
 
     internal class Result
     {
-        public required Results<CreatedAtRoute, BadRequest<ProblemDetails>> Http { get; init; }
+        public required HttpResult Http { get; init; }
         public SideEffects? SideEffects { get; init; }
     }
 
@@ -77,5 +91,30 @@ public static class CreateCharacter
 
         sideEffects.CreateCharacter.Execute(dbContext);
         await dbContext.SaveChangesAsync();
+    }
+
+    internal static async Task<HttpResult?> HandleException(
+        Command command,
+        Exception e,
+        AppDbContext dbContext)
+    {
+        switch (e)
+        {
+            case DbUpdateException
+            {
+                InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation }
+            }:
+            {
+                var characterId = await dbContext.Characters
+                    .Where(x => x.Id == command.CharacterId && x.Name == command.CharacterName)
+                    .SingleOrDefaultAsync();
+
+                return characterId is null
+                    ? TypedResults.Conflict()
+                    : TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Id = characterId });
+            }
+        }
+
+        return null;
     }
 }
