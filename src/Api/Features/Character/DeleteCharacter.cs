@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Wrpg;
 
+using HttpResult = Results<Ok, NotFound>;
+
 [Feature]
 public static class DeleteCharacter
 {
@@ -17,7 +19,7 @@ public static class DeleteCharacter
             .WithName(nameof(DeleteCharacter));
     }
 
-    internal static async Task<Results<Ok, NotFound>> Execute(
+    internal static async Task<HttpResult> Execute(
         Guid id,
         ClaimsPrincipal user,
         AppDbContext dbContext)
@@ -70,7 +72,7 @@ public static class DeleteCharacter
 
     internal class Result
     {
-        public required Results<Ok, NotFound> Http { get; init; }
+        public required HttpResult Http { get; init; }
         public SideEffects? SideEffects { get; init; }
     }
 
