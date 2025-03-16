@@ -1,16 +1,28 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Wrpg;
 
 namespace Features.Character.Player;
 
+using HttpResult = Results<CreatedAtRoute, Conflict, BadRequest<ProblemDetails>>;
+
 public class CreateCharacterForPlayerTest
 {
-    [Fact]
-    public void Succeeds()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(15)]
+    [InlineData(20)]
+    public void Succeeds_when_character_name_is_not_empty_and_does_not_exceed_max_length(int length)
     {
-        var command = CreateCommand();
+        var command = CreateCommand(characterName: Generator.RandomString(length));
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
+        AssertSuccess(result, command);
+    }
 
+    private static void AssertSuccess(
+        FeatureResult<HttpResult, CreateCharacterForPlayer.SideEffects?> result,
+        CreateCharacterForPlayer.Command command)
+    {
         Assert.Multiple(
             () =>
             {
@@ -39,6 +51,45 @@ public class CreateCharacterForPlayerTest
                         Assert.Equivalent(expected, subject.CreateCharacter);
                     });
             });
+    }
+
+    [Theory]
+    [InlineData(21)]
+    [InlineData(22)]
+    public void Fails_when_character_name_exceeds_max_length(int length)
+    {
+        var command = CreateCommand(characterName: Generator.RandomString(length));
+        var result = CreateCharacterForPlayer.ExecuteLogic(command);
+        AssertFailure(result, () =>
+        {
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            Assert.NotNull(subject.Value);
+            Assert.Equal(CreateCharacterForPlayer.CharacterNameExceedsMaxLengthMessage, subject.Value.Detail);
+        });
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Fails_when_character_name_is_empty(string characterName)
+    {
+        var command = CreateCommand(characterName: characterName);
+        var result = CreateCharacterForPlayer.ExecuteLogic(command);
+        AssertFailure(result, () =>
+        {
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            Assert.NotNull(subject.Value);
+            Assert.Equal(CreateCharacterForPlayer.CharacterNameIsEmptyMessage, subject.Value.Detail);
+        });
+    }
+
+    private static void AssertFailure(
+        FeatureResult<HttpResult, CreateCharacterForPlayer.SideEffects?> result,
+        Action additionalTestCode)
+    {
+        Assert.Multiple(
+            additionalTestCode,
+            () => Assert.Null(result.SideEffects));
     }
 
     private static CreateCharacterForPlayer.Command CreateCommand(

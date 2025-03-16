@@ -7,7 +7,7 @@ using Npgsql;
 
 namespace Wrpg;
 
-using HttpResult = Results<CreatedAtRoute, Conflict>;
+using HttpResult = Results<CreatedAtRoute, Conflict, BadRequest<ProblemDetails>>;
 
 [Feature]
 public static class CreateCharacterForPlayer
@@ -53,8 +53,13 @@ public static class CreateCharacterForPlayer
         public required string UserId { get; init; }
     }
 
-    internal static FeatureResult<HttpResult, SideEffects> ExecuteLogic(Command command)
+    internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Command command)
     {
+        if (string.IsNullOrWhiteSpace(command.CharacterName))
+            return new() { Http = CustomTypedResults.BadRequest(CharacterNameIsEmptyMessage) };
+        if (command.CharacterName.Length > Character.MaxNameLength)
+            return new() { Http = CustomTypedResults.BadRequest(CharacterNameExceedsMaxLengthMessage) };
+
         var character = Character.CreateNew(command.CharacterId, command.CharacterName, command.UserId);
         return new()
         {
@@ -66,13 +71,20 @@ public static class CreateCharacterForPlayer
         };
     }
 
+    internal const string CharacterNameIsEmptyMessage = "Character name cannot be empty";
+
+    internal static readonly string CharacterNameExceedsMaxLengthMessage =
+        $"Character name cannot exceed {Character.MaxNameLength} characters";
+
     internal class SideEffects
     {
         public required CreateEntity<Character> CreateCharacter { get; init; }
     }
 
-    internal static async Task ExecuteSideEffects(SideEffects sideEffects, AppDbContext dbContext)
+    internal static async Task ExecuteSideEffects(SideEffects? sideEffects, AppDbContext dbContext)
     {
+        if (sideEffects is null) return;
+
         sideEffects.CreateCharacter.Execute(dbContext);
         await dbContext.SaveChangesAsync();
     }
