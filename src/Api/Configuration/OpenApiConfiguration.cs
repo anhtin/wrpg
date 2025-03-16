@@ -48,10 +48,10 @@ public static class OpenApiConfiguration
                     TokenUrl = new Uri(tokenUrl),
                     Scopes = new Dictionary<string, string>
                     {
-                        ["read:character:all"] = "See any character",
-                        ["write:character:all"] = "Modify any character",
-                        ["read:character:own"] = "See own characters",
-                        ["write:character:own"] = "Modify own characters",
+                        [Permission.CharacterReadAll] = "See any character",
+                        [Permission.CharacterWriteAll] = "Modify any character",
+                        [Permission.CharacterReadOwn] = "See own characters",
+                        [Permission.CharacterWriteOwn] = "Modify own characters",
                     }
                 }
             },
