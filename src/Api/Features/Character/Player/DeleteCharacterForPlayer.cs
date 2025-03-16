@@ -30,7 +30,7 @@ public static class DeleteCharacterForPlayer
             CharacterId = id,
             UserId = userId,
         };
-        return await FeatureHelper.Execute<Data, Result, HttpResult, SideEffects?>(
+        return await FeatureHelper.Execute(
             () => LoadData(command, dbContext),
             ExecuteLogic,
             sideEffects => ExecuteSideEffects(sideEffects, dbContext));
@@ -55,7 +55,7 @@ public static class DeleteCharacterForPlayer
         return new() { Character = character };
     }
 
-    internal static Result ExecuteLogic(Data data)
+    internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Data data)
     {
         if (data.Character is null)
             return new() { Http = TypedResults.NotFound() };
@@ -69,8 +69,6 @@ public static class DeleteCharacterForPlayer
             },
         };
     }
-
-    internal class Result : FeatureResult<HttpResult, SideEffects?>;
 
     internal class SideEffects
     {

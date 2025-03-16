@@ -35,7 +35,7 @@ public static class CreateCharacterForPlayer
             CharacterName = body.CharacterName,
             UserId = userId,
         };
-        return await FeatureHelper.TryExecute<Result, HttpResult, SideEffects?>(
+        return await FeatureHelper.TryExecute(
             () => ExecuteLogic(command),
             sideEffects => ExecuteSideEffects(sideEffects, dbContext),
             e => HandleException(e, command, dbContext));
@@ -53,7 +53,7 @@ public static class CreateCharacterForPlayer
         public required string UserId { get; init; }
     }
 
-    internal static Result ExecuteLogic(Command command)
+    internal static FeatureResult<HttpResult, SideEffects> ExecuteLogic(Command command)
     {
         var character = Character.CreateNew(command.CharacterId, command.CharacterName, command.UserId);
         return new()
@@ -66,17 +66,13 @@ public static class CreateCharacterForPlayer
         };
     }
 
-    internal class Result : FeatureResult<HttpResult, SideEffects?>;
-
     internal class SideEffects
     {
         public required CreateEntity<Character> CreateCharacter { get; init; }
     }
 
-    internal static async Task ExecuteSideEffects(SideEffects? sideEffects, AppDbContext dbContext)
+    internal static async Task ExecuteSideEffects(SideEffects sideEffects, AppDbContext dbContext)
     {
-        if (sideEffects is null) return;
-
         sideEffects.CreateCharacter.Execute(dbContext);
         await dbContext.SaveChangesAsync();
     }

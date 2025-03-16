@@ -2,11 +2,10 @@
 
 public static class FeatureHelper
 {
-    public static async Task<THttpResult> Execute<TData, TResult, THttpResult, TSideEffects>(
+    public static async Task<THttpResult> Execute<TData, THttpResult, TSideEffects>(
         Func<Task<TData>> loadData,
-        Func<TData, TResult> executeLogic,
+        Func<TData, FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects)
-        where TResult : FeatureResult<THttpResult, TSideEffects>
     {
         var data = await loadData();
         var result = executeLogic(data);
@@ -14,10 +13,9 @@ public static class FeatureHelper
         return result.Http;
     }
 
-    public static async Task<THttpResult> Execute<TResult, THttpResult, TSideEffects>(
-        Func<TResult> executeLogic,
+    public static async Task<THttpResult> Execute<THttpResult, TSideEffects>(
+        Func<FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects)
-        where TResult : FeatureResult<THttpResult, TSideEffects>
     {
         var result = executeLogic();
         await executeSideEffects(result.SideEffects);
@@ -31,12 +29,11 @@ public static class FeatureHelper
         return result.Http;
     }
 
-    public static async Task<THttpResult> TryExecute<TData, TResult, THttpResult, TSideEffects>(
+    public static async Task<THttpResult> TryExecute<TData, THttpResult, TSideEffects>(
         Func<Task<TData>> loadData,
-        Func<TData, TResult> executeLogic,
+        Func<TData, FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
-        where TResult : FeatureResult<THttpResult, TSideEffects>
     {
         try
         {
@@ -53,11 +50,10 @@ public static class FeatureHelper
         }
     }
 
-    public static async Task<THttpResult> TryExecute<TResult, THttpResult, TSideEffects>(
-        Func<TResult> executeLogic,
+    public static async Task<THttpResult> TryExecute<THttpResult, TSideEffects>(
+        Func<FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
-        where TResult : FeatureResult<THttpResult, TSideEffects>
     {
         try
         {
@@ -73,10 +69,9 @@ public static class FeatureHelper
         }
     }
 
-    public static async Task<THttpResult> TryExecute<TResult, THttpResult>(
-        Func<TResult> executeLogic,
+    public static async Task<THttpResult> TryExecute<THttpResult>(
+        Func<FeatureResult<THttpResult>> executeLogic,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
-        where TResult : FeatureResult<THttpResult>
     {
         try
         {
