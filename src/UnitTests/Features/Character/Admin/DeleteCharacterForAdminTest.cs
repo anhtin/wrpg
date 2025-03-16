@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Wrpg;
 
-namespace Features.Character;
+namespace Features.Character.Admin;
 
 public class DeleteCharacterForAdminTest
 {
