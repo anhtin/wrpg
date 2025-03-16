@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Wrpg;
@@ -30,10 +29,10 @@ public static class DeleteCharacter
             CharacterId = id,
             UserId = userId,
         };
-        var data = await LoadData(command, dbContext);
-        var result = ExecuteLogic(data);
-        await ExecuteSideEffects(result.SideEffects, dbContext);
-        return result.Http;
+        return await FeatureHelper.Execute<Data, Result, HttpResult, SideEffects?>(
+            () => LoadData(command, dbContext),
+            ExecuteLogic,
+            sideEffects => ExecuteSideEffects(sideEffects, dbContext));
     }
 
     internal class Command
@@ -70,11 +69,7 @@ public static class DeleteCharacter
         };
     }
 
-    internal class Result
-    {
-        public required HttpResult Http { get; init; }
-        public SideEffects? SideEffects { get; init; }
-    }
+    internal class Result : FeatureResult<HttpResult, SideEffects?>;
 
     internal class SideEffects
     {

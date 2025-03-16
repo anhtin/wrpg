@@ -34,19 +34,10 @@ public static class CreateCharacter
             CharacterName = body.CharacterName,
             UserId = userId,
         };
-        var result = ExecuteLogic(command);
-        try
-        {
-            await ExecuteSideEffects(result.SideEffects, dbContext);
-        }
-        catch (Exception e)
-        {
-            var overridingHttpResult = await HandleException(command, e, dbContext);
-            if (overridingHttpResult is not null) return overridingHttpResult;
-            throw;
-        }
-
-        return result.Http;
+        return await FeatureHelper.TryExecute<Result, HttpResult, SideEffects?>(
+            () => ExecuteLogic(command),
+            sideEffects => ExecuteSideEffects(sideEffects, dbContext),
+            e => HandleException(e, command, dbContext));
     }
 
     public class Request
@@ -74,11 +65,7 @@ public static class CreateCharacter
         };
     }
 
-    internal class Result
-    {
-        public required HttpResult Http { get; init; }
-        public SideEffects? SideEffects { get; init; }
-    }
+    internal class Result : FeatureResult<HttpResult, SideEffects?>;
 
     internal class SideEffects
     {
@@ -94,8 +81,8 @@ public static class CreateCharacter
     }
 
     internal static async Task<HttpResult?> HandleException(
-        Command command,
         Exception e,
+        Command command,
         AppDbContext dbContext)
     {
         switch (e)
