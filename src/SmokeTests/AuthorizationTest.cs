@@ -49,7 +49,7 @@ public class AuthorizationTest(Sut sut) : SmokeTestContext(sut)
     }
 
     [Fact]
-    public async Task Admin_can_view_any_player_character()
+    public async Task Admin_can_view_and_delete_any_player_character()
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
@@ -71,6 +71,16 @@ public class AuthorizationTest(Sut sut) : SmokeTestContext(sut)
 
         response = await ViewCharacterForPlayer(AdminClient, id2);
         await HttpAssert.Status(HttpStatusCode.Forbidden, response);
+
+        response = await DeleteCharacterForAdmin(AdminClient, id1);
+        await HttpAssert.Status(HttpStatusCode.OK, response);
+        response = await ViewCharacterForAdmin(AdminClient, id1);
+        await HttpAssert.Status(HttpStatusCode.NotFound, response);
+
+        response = await DeleteCharacterForAdmin(AdminClient, id2);
+        await HttpAssert.Status(HttpStatusCode.OK, response);
+        response = await ViewCharacterForAdmin(AdminClient, id2);
+        await HttpAssert.Status(HttpStatusCode.NotFound, response);
     }
 
     private static async Task<HttpResponseMessage> CreateCharacterForPlayer(HttpClient client, Guid characterId)
@@ -89,5 +99,10 @@ public class AuthorizationTest(Sut sut) : SmokeTestContext(sut)
     private static async Task<HttpResponseMessage> ViewCharacterForAdmin(HttpClient client, Guid id)
     {
         return await client.GetAsync($"admin/character/{id}");
+    }
+
+    private static async Task<HttpResponseMessage> DeleteCharacterForAdmin(HttpClient client, Guid id)
+    {
+        return await client.DeleteAsync($"admin/character/{id}");
     }
 }
