@@ -16,12 +16,12 @@ public static class GetCharacterForAdmin
             .RequirePermissionAny(Permission.CharacterReadAll, Permission.CharacterWriteAll);
     }
 
-    internal static async Task<Results<Ok<Response>, NotFound>> Execute(Guid id, AppDbContext dbContext)
+    internal static async Task<Results<Ok<Character>, NotFound>> Execute(Guid id, AppDbContext dbContext)
     {
         var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.Id == id);
         return character is null
             ? TypedResults.NotFound()
-            : TypedResults.Ok<Response>(new()
+            : TypedResults.Ok<Character>(new()
             {
                 UserId = character.UserId,
                 Name = character.Name,
@@ -45,7 +45,7 @@ public static class GetCharacterForAdmin
             });
     }
 
-    public class Response
+    public class Character
     {
         public required string UserId { get; init; }
         public required string Name { get; init; }

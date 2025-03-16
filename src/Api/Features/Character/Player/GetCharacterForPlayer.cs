@@ -17,7 +17,7 @@ public static class GetCharacterForPlayer
             .RequirePermissionAny(Permission.CharacterReadOwn, Permission.CharacterWriteOwn);
     }
 
-    internal static async Task<Results<Ok<Response>, NotFound>> Execute(
+    internal static async Task<Results<Ok<Character>, NotFound>> Execute(
         Guid id,
         ClaimsPrincipal user,
         AppDbContext dbContext)
@@ -26,7 +26,7 @@ public static class GetCharacterForPlayer
         var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
         return character is null
             ? TypedResults.NotFound()
-            : TypedResults.Ok<Response>(new()
+            : TypedResults.Ok<Character>(new()
             {
                 Name = character.Name,
                 Stats = new()
@@ -49,7 +49,7 @@ public static class GetCharacterForPlayer
             });
     }
 
-    public class Response
+    public class Character
     {
         public required string Name { get; init; }
         public required Stats Stats { get; init; }

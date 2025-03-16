@@ -39,7 +39,7 @@ public class GetCharacterForPlayerTest
         var response = await GetCharacterForPlayer.Execute(character.Id, user, dbContext);
 
         // Assert
-        var result = Assert.IsType<Ok<GetCharacterForPlayer.Response>>(response.Result);
+        var result = Assert.IsType<Ok<GetCharacterForPlayer.Character>>(response.Result);
         var expected = Map(character);
         Assert.Equivalent(expected, result.Value);
     }
@@ -62,7 +62,7 @@ public class GetCharacterForPlayerTest
         },
     };
 
-    private static GetCharacterForPlayer.Response Map(Wrpg.Character character) => new()
+    private static GetCharacterForPlayer.Character Map(Wrpg.Character character) => new()
     {
         Name = character.Name,
         Stats = new GetCharacterForPlayer.Stats

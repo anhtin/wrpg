@@ -34,7 +34,7 @@ public class GetCharacterForAdminTest
         var response = await GetCharacterForAdmin.Execute(character.Id, dbContext);
 
         // Assert
-        var result = Assert.IsType<Ok<GetCharacterForAdmin.Response>>(response.Result);
+        var result = Assert.IsType<Ok<GetCharacterForAdmin.Character>>(response.Result);
         var expected = Map(character);
         Assert.Equivalent(expected, result.Value);
     }
@@ -57,7 +57,7 @@ public class GetCharacterForAdminTest
         },
     };
 
-    private static GetCharacterForAdmin.Response Map(Wrpg.Character character) => new()
+    private static GetCharacterForAdmin.Character Map(Wrpg.Character character) => new()
     {
         UserId = character.UserId,
         Name = character.Name,
