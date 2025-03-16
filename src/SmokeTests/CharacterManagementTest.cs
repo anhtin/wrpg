@@ -29,12 +29,15 @@ public class CharacterManagementTest(Sut sut) : SmokeTestContext(sut)
             await AssertCharacterExists(id3);
         });
 
+        await CustomAssert.Test("Can list characters", async () => await AssertListedCharacters(id1, id2, id3));
+
         await CustomAssert.Test("Can delete character", async () =>
         {
             await DeleteCharacter(id2);
             await AssertCharacterNotExists(id2);
             await AssertCharacterExists(id1);
             await AssertCharacterExists(id3);
+            await AssertListedCharacters(id1, id3);
         });
     }
 
@@ -66,5 +69,14 @@ public class CharacterManagementTest(Sut sut) : SmokeTestContext(sut)
     {
         var response = await PlayerClient.GetAsync($"character/{id}");
         await HttpAssert.Status(HttpStatusCode.NotFound, response);
+    }
+
+    private async Task AssertListedCharacters(params Guid[] ids)
+    {
+        var response = await PlayerClient.GetAsync("character");
+        await HttpAssert.Status(HttpStatusCode.OK, response);
+        await HttpAssert.Body<Page<ListCharactersForPlayer.Character>>(
+            x => x != null && ids.SequenceEqual(x.Items.Select(item => item.Id)),
+            response);
     }
 }

@@ -76,6 +76,30 @@ public static class HttpAssert
         }
     }
 
+    public static async Task Body<T>(
+        Expression<Predicate<T?>> bodyInspector,
+        HttpResponseMessage response,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        jsonSerializerOptions ??= new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
+        var bodyString = await response.Content.ReadAsStringAsync();
+        var body = JsonSerializer.Deserialize<T>(bodyString, jsonSerializerOptions);
+        var compiledBodyInspector = bodyInspector.Compile();
+        try
+        {
+            compiledBodyInspector.Invoke(body);
+        }
+        catch (EquivalentException)
+        {
+            throw new HttpAssertException(
+                await CreateErrorMessage("Unexpected response body", bodyInspector.ToString(), bodyString, response));
+        }
+    }
+
     private static async Task<string> CreateErrorMessage(
         string message,
         string expected,
