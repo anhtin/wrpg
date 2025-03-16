@@ -16,6 +16,21 @@ public static class OpenApiConfiguration
                 AddImplicitOauthFlow(document, authorizationUrl, tokenUrl);
                 return Task.CompletedTask;
             });
+
+            openApiOptions.AddSchemaTransformer((schema, context, _) =>
+            {
+                if (schema.Annotations == null || !schema.Annotations.ContainsKey("x-schema-id"))
+                    return Task.CompletedTask;
+
+                var type = context.JsonTypeInfo.Type;
+                if (!type.IsNested || type.DeclaringType is null)
+                    return Task.CompletedTask;
+
+                schema.Title = $"{type.DeclaringType.Name}.{type.Name}";
+                schema.Annotations["x-schema-id"] = schema.Title;
+
+                return Task.CompletedTask;
+            });
         };
     }
 
