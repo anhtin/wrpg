@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Wrpg;
 
 namespace Features.Character;
 
-public class CreateCharacterTest
+public class CreateCharacterForPlayerTest
 {
     [Fact]
     public void Succeeds()
     {
         var command = CreateCommand();
-        var result = CreateCharacter.ExecuteLogic(command);
+        var result = CreateCharacterForPlayer.ExecuteLogic(command);
 
         Assert.Multiple(
             () =>
             {
                 var subject = Assert.IsType<CreatedAtRoute>(result.Http.Result);
                 Assert.Multiple(
-                    () => Assert.Equal(nameof(GetCharacter), subject.RouteName),
+                    () => Assert.Equal(nameof(GetCharacterForPlayer), subject.RouteName),
                     () =>
                     {
                         var expected = new KeyValuePair<string, object?>("Id", command.CharacterId);
@@ -42,7 +41,7 @@ public class CreateCharacterTest
             });
     }
 
-    private static CreateCharacter.Command CreateCommand(
+    private static CreateCharacterForPlayer.Command CreateCommand(
         Guid? characterId = null,
         string? characterName = null,
         string? userId = null) => new()

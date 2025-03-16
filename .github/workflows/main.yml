@@ -29,8 +29,12 @@ jobs:
         env:
           OAuth__Authority: ${{ vars.AUTH0_AUTHORITY }}
           OAuth__Audience: ${{ vars.AUTH0_AUDIENCE }}
-          SmokeTest__OAuth__ClientId: ${{ secrets.AUTH0_GITHUB_CLIENT_ID }}
-          SmokeTest__OAuth__ClientSecret: ${{ secrets.AUTH0_GITHUB_CLIENT_SECRET }}
+          SmokeTest__OAuth__Credentials__Admin__ClientId: ${{ secrets.AUTH0_GITHUB_ADMIN_CLIENT_ID }}
+          SmokeTest__OAuth__Credentials__Admin__ClientSecret: ${{ secrets.AUTH0_GITHUB_ADMIN_CLIENT_SECRET }}
+          SmokeTest__OAuth__Credentials__Player1__ClientId: ${{ secrets.AUTH0_GITHUB_PLAYER1_CLIENT_ID }}
+          SmokeTest__OAuth__Credentials__Player1__ClientSecret: ${{ secrets.AUTH0_GITHUB_PLAYER1_CLIENT_SECRET }}
+          SmokeTest__OAuth__Credentials__Player2__ClientId: ${{ secrets.AUTH0_GITHUB_PLAYER2_CLIENT_ID }}
+          SmokeTest__OAuth__Credentials__Player2__ClientSecret: ${{ secrets.AUTH0_GITHUB_PLAYER2_CLIENT_SECRET }}
 
       - name: Generate unit test report
         uses: dorny/test-reporter@v1

@@ -10,8 +10,8 @@ public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
     {
         var idempotencyKey = Guid.NewGuid();
         const string name = "dylan";
-        await CreateCharacter(FullyAuthorizedClient, idempotencyKey, name);
-        var response = await CreateCharacter(FullyAuthorizedClient, idempotencyKey, name);
+        await CreateCharacter(PlayerClient, idempotencyKey, name);
+        var response = await CreateCharacter(PlayerClient, idempotencyKey, name);
         await HttpAssert.Status(HttpStatusCode.Created, response);
     }
 
@@ -19,14 +19,14 @@ public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
     public async Task CreateCharacter_fails_when_subsequent_request_is_different_but_idempotency_key_is_identical()
     {
         var idempotencyKey = Guid.NewGuid();
-        await CreateCharacter(FullyAuthorizedClient, idempotencyKey, "dylan");
-        var response = await CreateCharacter(FullyAuthorizedClient, idempotencyKey, "bob");
+        await CreateCharacter(PlayerClient, idempotencyKey, "dylan");
+        var response = await CreateCharacter(PlayerClient, idempotencyKey, "bob");
         await HttpAssert.Status(HttpStatusCode.Conflict, response);
     }
 
     private static async Task<HttpResponseMessage> CreateCharacter(HttpClient client, Guid idempotencyKey, string name)
     {
-        var request = JsonContent.Create(new CreateCharacter.Request { CharacterName = name });
+        var request = JsonContent.Create(new CreateCharacterForPlayer.Request { CharacterName = name });
         request.Headers.Add(CustomHttpHeader.IdempotencyKey, idempotencyKey.ToString());
         return await client.PostAsync("character", request);
     }

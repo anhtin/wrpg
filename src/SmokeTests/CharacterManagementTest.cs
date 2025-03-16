@@ -24,12 +24,12 @@ public class CharacterManagementTest(Sut sut) : SmokeTestContext(sut)
     private async Task<Guid> CreateCharacter(string characterName)
     {
         var characterId = Guid.NewGuid();
-        var request = JsonContent.Create(new CreateCharacter.Request { CharacterName = characterName });
+        var request = JsonContent.Create(new CreateCharacterForPlayer.Request { CharacterName = characterName });
         request.Headers.Add(CustomHttpHeader.IdempotencyKey, characterId.ToString());
-        var response = await FullyAuthorizedClient.PostAsync("character", request);
+        var response = await PlayerClient.PostAsync("character", request);
 
         await HttpAssert.Status(HttpStatusCode.Created, response);
-        var expectedLocation = $"{FullyAuthorizedClient.BaseAddress}character/{characterId}";
+        var expectedLocation = $"{PlayerClient.BaseAddress}character/{characterId}";
         await HttpAssert.Header(HeaderNames.Location, expectedLocation, response);
 
         return characterId;
@@ -37,19 +37,19 @@ public class CharacterManagementTest(Sut sut) : SmokeTestContext(sut)
 
     private async Task DeleteCharacter(Guid id)
     {
-        var response = await FullyAuthorizedClient.DeleteAsync($"character/{id}");
+        var response = await PlayerClient.DeleteAsync($"character/{id}");
         await HttpAssert.Status(HttpStatusCode.OK, response);
     }
 
     private async Task AssertCharacterExists(Guid id)
     {
-        var response = await FullyAuthorizedClient.GetAsync($"character/{id}");
+        var response = await PlayerClient.GetAsync($"character/{id}");
         await HttpAssert.Status(HttpStatusCode.OK, response);
     }
 
     private async Task AssertCharacterNotExists(Guid id)
     {
-        var response = await FullyAuthorizedClient.GetAsync($"character/{id}");
+        var response = await PlayerClient.GetAsync($"character/{id}");
         await HttpAssert.Status(HttpStatusCode.NotFound, response);
     }
 }

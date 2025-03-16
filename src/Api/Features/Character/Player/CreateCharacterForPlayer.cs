@@ -10,14 +10,15 @@ namespace Wrpg;
 using HttpResult = Results<CreatedAtRoute, Conflict>;
 
 [Feature]
-public static class CreateCharacter
+public static class CreateCharacterForPlayer
 {
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
         builder.MapPost("character", Execute)
-            .WithTags(nameof(Character))
-            .WithName(nameof(CreateCharacter));
+            .WithTags(EndpointTag.Role.Player, EndpointTag.Resource.Character)
+            .WithName(nameof(CreateCharacterForPlayer))
+            .RequirePermissionAny(Permission.CharacterWriteOwn);
     }
 
     internal static async Task<HttpResult> Execute(
@@ -57,7 +58,7 @@ public static class CreateCharacter
         var character = Character.CreateNew(command.CharacterId, command.CharacterName, command.UserId);
         return new()
         {
-            Http = TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Id = character.Id }),
+            Http = TypedResults.CreatedAtRoute(nameof(GetCharacterForPlayer), new { Id = character.Id }),
             SideEffects = new()
             {
                 CreateCharacter = new CreateEntity<Character>(character),
@@ -98,7 +99,7 @@ public static class CreateCharacter
 
                 return characterId is null
                     ? TypedResults.Conflict()
-                    : TypedResults.CreatedAtRoute(nameof(GetCharacter), new { Id = characterId });
+                    : TypedResults.CreatedAtRoute(nameof(GetCharacterForPlayer), new { Id = characterId });
             }
         }
 

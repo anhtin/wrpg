@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Wrpg;
 
 namespace Features.Character;
 
-public class DeleteCharacterTest
+public class DeleteCharacterForAdminTest
 {
     [Fact]
     public void Succeeds_when_all_is_good()
     {
         var data = CreateData(character: CharacterGenerator.Create());
-        var result = DeleteCharacter.ExecuteLogic(data);
+        var result = DeleteCharacterForAdmin.ExecuteLogic(data);
 
         Assert.Multiple(
             () => Assert.IsType<Ok>(result.Http.Result),
@@ -26,7 +25,7 @@ public class DeleteCharacterTest
     public void Fails_when_character_does_not_exist()
     {
         var data = CreateData(character: null);
-        var result = DeleteCharacter.ExecuteLogic(data);
+        var result = DeleteCharacterForAdmin.ExecuteLogic(data);
 
         Assert.Multiple(
             () => Assert.IsType<NotFound>(result.Http.Result),
@@ -37,7 +36,7 @@ public class DeleteCharacterTest
             });
     }
 
-    private static DeleteCharacter.Data CreateData(Wrpg.Character? character) => new()
+    private static DeleteCharacterForAdmin.Data CreateData(Wrpg.Character? character) => new()
     {
         Character = character,
     };

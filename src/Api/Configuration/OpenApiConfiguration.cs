@@ -31,6 +31,13 @@ public static class OpenApiConfiguration
                 {
                     AuthorizationUrl = new Uri(authorizationUrl),
                     TokenUrl = new Uri(tokenUrl),
+                    Scopes = new Dictionary<string, string>
+                    {
+                        ["read:character:all"] = "See any character",
+                        ["write:character:all"] = "Modify any character",
+                        ["read:character:own"] = "See own characters",
+                        ["write:character:own"] = "Modify own characters",
+                    }
                 }
             },
             Reference = new() { Id = "oauth2", Type = ReferenceType.SecurityScheme, },

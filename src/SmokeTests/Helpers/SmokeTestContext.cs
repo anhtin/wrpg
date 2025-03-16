@@ -11,40 +11,47 @@ public class SmokeTestContext(Sut sut) : IClassFixture<Sut>, IAsyncLifetime
 {
     protected Sut Sut { get; } = sut;
     protected HttpClient UnauthorizedClient { get; } = sut.CreateClient();
-    protected HttpClient FullyAuthorizedClient { get; private set; } = null!;
+    protected HttpClient AdminClient { get; private set; } = null!;
+    protected HttpClient Player1Client { get; private set; } = null!;
+    protected HttpClient Player2Client { get; private set; } = null!;
+
+    protected HttpClient PlayerClient => Player1Client;
 
     public async Task InitializeAsync()
     {
-        FullyAuthorizedClient = await CreateAuthorizedClient();
+        var configuration = (IConfigurationRoot)Sut.Services.GetRequiredService<IConfiguration>();
+        var oauthOptions = OauthOptions.CreateFrom(configuration);
+        var smokeTestOauthOptions = SmokeTestOauthOptions.CreateFrom(configuration);
+        AdminClient = await CreateAuthorizedClient(oauthOptions, smokeTestOauthOptions.Credentials.Admin);
+        Player1Client = await CreateAuthorizedClient(oauthOptions, smokeTestOauthOptions.Credentials.Player1);
+        Player2Client = await CreateAuthorizedClient(oauthOptions, smokeTestOauthOptions.Credentials.Player2);
     }
 
     public Task DisposeAsync()
     {
         UnauthorizedClient.Dispose();
-        FullyAuthorizedClient.Dispose();
+        AdminClient.Dispose();
+        Player1Client.Dispose();
+        Player2Client.Dispose();
         return Task.CompletedTask;
     }
 
-    protected async Task<HttpClient> CreateAuthorizedClient()
+    private async Task<HttpClient> CreateAuthorizedClient(OauthOptions oauthOptions, OAuthClientCredentials credentials)
     {
+        var accessToken = await GetAccessToken(oauthOptions, credentials);
         var sutClient = Sut.CreateClient();
-        var accessToken = await GetAccessToken();
         sutClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         return sutClient;
     }
 
-    private async Task<string> GetAccessToken()
+    private async Task<string> GetAccessToken(OauthOptions oauthOptions, OAuthClientCredentials credentials)
     {
-        var configuration = (IConfigurationRoot)Sut.Services.GetRequiredService<IConfiguration>();
-        var oauthOptions = OauthOptions.CreateFrom(configuration);
-        var smokeTestOauthOptions = SmokeTestOauthOptions.CreateFrom(configuration);
-
         using var httpClient = new HttpClient();
         var tokenUrl = $"{oauthOptions.Authority}/oauth/token";
         var response = await httpClient.PostAsJsonAsync(tokenUrl, new
         {
-            client_id = smokeTestOauthOptions.ClientId,
-            client_secret = smokeTestOauthOptions.ClientSecret,
+            client_id = credentials.ClientId,
+            client_secret = credentials.ClientSecret,
             audience = oauthOptions.Audience,
             grant_type = "client_credentials",
         });

@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,26 +7,22 @@ namespace Wrpg;
 using HttpResult = Results<Ok, NotFound>;
 
 [Feature]
-public static class DeleteCharacter
+public static class DeleteCharacterForAdmin
 {
     [UsedImplicitly]
     internal static void ConfigureEndpoints(IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("character/{id}", Execute)
-            .WithTags(nameof(Character))
-            .WithName(nameof(DeleteCharacter));
+        builder.MapDelete("admin/character/{id}", Execute)
+            .WithTags(EndpointTag.Role.Admin, EndpointTag.Resource.Character)
+            .WithName(nameof(DeleteCharacterForAdmin))
+            .RequirePermissionAny(Permission.CharacterWriteAll);
     }
 
-    internal static async Task<HttpResult> Execute(
-        Guid id,
-        ClaimsPrincipal user,
-        AppDbContext dbContext)
+    internal static async Task<HttpResult> Execute(Guid id, AppDbContext dbContext)
     {
-        var userId = UserId.ResolveFrom(user);
         var command = new Command
         {
             CharacterId = id,
-            UserId = userId,
         };
         return await FeatureHelper.Execute<Data, Result, HttpResult, SideEffects?>(
             () => LoadData(command, dbContext),
@@ -38,7 +33,6 @@ public static class DeleteCharacter
     internal class Command
     {
         public required Guid CharacterId { get; init; }
-        public required string UserId { get; init; }
     }
 
     internal class Data
@@ -48,9 +42,7 @@ public static class DeleteCharacter
 
     internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
     {
-        var character = await dbContext.Characters
-            .SingleOrDefaultAsync(x => x.Id == command.CharacterId && x.UserId == command.UserId);
-
+        var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.Id == command.CharacterId);
         return new() { Character = character };
     }
 

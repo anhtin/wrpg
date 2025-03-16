@@ -11,8 +11,8 @@ public static class SwaggerConfiguration
             swaggerUiOptions.RoutePrefix = "docs";
             swaggerUiOptions.SwaggerEndpoint("/openapi/v1.json", "API Spec");
             swaggerUiOptions.OAuthAppName("Swagger Client");
-            swaggerUiOptions.OAuthClientId(options.ClientId);
-            swaggerUiOptions.OAuthClientSecret(options.ClientSecret);
+            swaggerUiOptions.OAuthClientId(options.Credentials.ClientId);
+            swaggerUiOptions.OAuthClientSecret(options.Credentials.ClientSecret);
         };
     }
 }
