@@ -8,9 +8,12 @@ public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
     [Fact]
     public async Task CreateCharacter_succeeds_when_subsequent_request_is_identical()
     {
+        // Arrange
         var idempotencyKey = Guid.NewGuid();
         const string name = "dylan";
         await CreateCharacter(PlayerClient, idempotencyKey, name);
+
+        // Act & Assert
         var response = await CreateCharacter(PlayerClient, idempotencyKey, name);
         await HttpAssert.Status(HttpStatusCode.Created, response);
     }
@@ -18,8 +21,11 @@ public class IdempotencyTest(Sut sut) : SmokeTestContext(sut)
     [Fact]
     public async Task CreateCharacter_fails_when_subsequent_request_is_different_but_idempotency_key_is_identical()
     {
+        // Arrange
         var idempotencyKey = Guid.NewGuid();
         await CreateCharacter(PlayerClient, idempotencyKey, "dylan");
+
+        // Act & Assert
         var response = await CreateCharacter(PlayerClient, idempotencyKey, "bob");
         await HttpAssert.Status(HttpStatusCode.Conflict, response);
     }
