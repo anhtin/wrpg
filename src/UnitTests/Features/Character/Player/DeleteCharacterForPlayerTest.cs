@@ -6,7 +6,7 @@ namespace Features.Character.Player;
 public class DeleteCharacterForPlayerTest
 {
     [Fact]
-    public void Succeeds_when_all_is_good()
+    public void Succeeds_when_character_exists()
     {
         var data = CreateData(character: CharacterGenerator.Create());
         var result = DeleteCharacterForPlayer.ExecuteLogic(data);

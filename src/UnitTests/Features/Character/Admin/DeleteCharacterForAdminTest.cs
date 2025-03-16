@@ -6,7 +6,7 @@ namespace Features.Character.Admin;
 public class DeleteCharacterForAdminTest
 {
     [Fact]
-    public void Succeeds_when_all_is_good()
+    public void Succeeds_when_character_exists()
     {
         var data = CreateData(character: CharacterGenerator.Create());
         var result = DeleteCharacterForAdmin.ExecuteLogic(data);
