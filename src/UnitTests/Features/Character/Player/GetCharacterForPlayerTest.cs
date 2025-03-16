@@ -23,7 +23,7 @@ public class GetCharacterForPlayerTest
     }
 
     [Fact]
-    public async Task Returns_character_with_correct_information()
+    public async Task Success_returns_character_with_correct_information()
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();

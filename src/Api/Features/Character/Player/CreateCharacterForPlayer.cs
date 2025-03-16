@@ -55,12 +55,13 @@ public static class CreateCharacterForPlayer
 
     internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Command command)
     {
-        if (string.IsNullOrWhiteSpace(command.CharacterName))
+        var characterName = command.CharacterName.Trim();
+        if (string.IsNullOrWhiteSpace(characterName))
             return new() { Http = CustomTypedResults.BadRequest(CharacterNameIsEmptyMessage) };
-        if (command.CharacterName.Length > Character.MaxNameLength)
+        if (characterName.Length > Character.MaxNameLength)
             return new() { Http = CustomTypedResults.BadRequest(CharacterNameExceedsMaxLengthMessage) };
 
-        var character = Character.CreateNew(command.CharacterId, command.CharacterName, command.UserId);
+        var character = Character.CreateNew(command.CharacterId, characterName, command.UserId);
         return new()
         {
             Http = TypedResults.CreatedAtRoute(nameof(GetCharacterForPlayer), new { Id = character.Id }),

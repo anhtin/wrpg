@@ -55,7 +55,7 @@ public class ListCharactersForAdminTest
     [InlineData(1, 2, 3, 2, 2)]
     [InlineData(2, 2, 3, 2, 1)]
     [InlineData(3, 2, 3, 2, 0)]
-    public async Task Returns_correct_page_information(
+    public async Task Success_returns_correct_page_information(
         int? pageNumber,
         int? pageSize,
         int totalItemCount,
@@ -83,7 +83,7 @@ public class ListCharactersForAdminTest
     }
 
     [Fact]
-    public async Task Returns_all_characters()
+    public async Task Success_returns_all_characters()
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
@@ -105,7 +105,7 @@ public class ListCharactersForAdminTest
     }
 
     [Fact]
-    public async Task Returns_characters_ordered_by_creation_time()
+    public async Task Success_returns_characters_ordered_by_creation_time()
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();
@@ -129,7 +129,7 @@ public class ListCharactersForAdminTest
     }
 
     [Fact]
-    public async Task Returns_characters_with_correct_information()
+    public async Task Success_returns_characters_with_correct_information()
     {
         // Arrange
         var userId = Guid.NewGuid().ToString();

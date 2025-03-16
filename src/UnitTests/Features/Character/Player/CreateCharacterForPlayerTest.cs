@@ -9,12 +9,25 @@ using HttpResult = Results<CreatedAtRoute, Conflict, BadRequest<ProblemDetails>>
 public class CreateCharacterForPlayerTest
 {
     [Theory]
+    [InlineData(" Leading space", "Leading space")]
+    [InlineData("Trailing space ", "Trailing space")]
+    [InlineData(" Space on both ends ", "Space on both ends")]
+    public void Success_trims_character_name(string characterName, string trimmedCharacterName)
+    {
+        var command = CreateCommand(characterName: characterName);
+        var result = CreateCharacterForPlayer.ExecuteLogic(command);
+        Assert.IsType<CreatedAtRoute>(result.Http.Result);
+        Assert.NotNull(result.SideEffects);
+        Assert.Equal(trimmedCharacterName, result.SideEffects.CreateCharacter.Entity.Name);
+    }
+
+    [Theory]
     [InlineData(1)]
     [InlineData(15)]
     [InlineData(20)]
     public void Succeeds_when_character_name_is_not_empty_and_does_not_exceed_max_length(int length)
     {
-        var command = CreateCommand(characterName: Generator.RandomString(length));
+        var command = CreateCommand(characterName: Generator.RandomString(length, includeSpace: false));
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
         AssertSuccess(result, command);
     }
@@ -58,7 +71,7 @@ public class CreateCharacterForPlayerTest
     [InlineData(22)]
     public void Fails_when_character_name_exceeds_max_length(int length)
     {
-        var command = CreateCommand(characterName: Generator.RandomString(length));
+        var command = CreateCommand(characterName: Generator.RandomString(length, includeSpace: false));
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
         AssertFailure(result, () =>
         {

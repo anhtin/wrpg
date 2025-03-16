@@ -21,7 +21,7 @@ public class GetCharacterForAdminTest
     }
 
     [Fact]
-    public async Task Returns_character_with_correct_information()
+    public async Task Success_returns_character_with_correct_information()
     {
         // Arrange
         var character = CharacterGenerator.Create(
