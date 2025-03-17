@@ -55,11 +55,9 @@ public static class CreateCharacterForPlayer
 
     internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Command command)
     {
-        var characterName = command.CharacterName.Trim();
-        if (string.IsNullOrWhiteSpace(characterName))
-            return new() { Http = CustomTypedResults.BadRequest(CharacterNameIsEmptyMessage) };
-        if (characterName.Length > Character.MaxNameLength)
-            return new() { Http = CustomTypedResults.BadRequest(CharacterNameExceedsMaxLengthMessage) };
+        var characterName = CharacterName.Normalized(command.CharacterName);
+        if (!CharacterName.IsValid(characterName, out var error))
+            return new() { Http = CustomTypedResults.BadRequest(error) };
 
         var character = Character.CreateNew(command.CharacterId, characterName, command.UserId);
         return new()
@@ -71,11 +69,6 @@ public static class CreateCharacterForPlayer
             },
         };
     }
-
-    internal const string CharacterNameIsEmptyMessage = "Character name cannot be empty";
-
-    internal static readonly string CharacterNameExceedsMaxLengthMessage =
-        $"Character name cannot exceed {Character.MaxNameLength} characters";
 
     internal class SideEffects
     {
@@ -102,13 +95,12 @@ public static class CreateCharacterForPlayer
                 InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation }
             }:
             {
-                var characterId = await dbContext.Characters
-                    .Where(x => x.Id == command.CharacterId && x.Name == command.CharacterName)
-                    .SingleOrDefaultAsync();
+                var hasMatch = await dbContext.Characters
+                    .AnyAsync(x => x.Id == command.CharacterId && x.Name == command.CharacterName);
 
-                return characterId is null
-                    ? TypedResults.Conflict()
-                    : TypedResults.CreatedAtRoute(nameof(GetCharacterForPlayer), new { Id = characterId });
+                return hasMatch
+                    ? TypedResults.CreatedAtRoute(nameof(GetCharacterForPlayer), new { Id = command.CharacterId })
+                    : TypedResults.Conflict();
             }
         }
 

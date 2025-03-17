@@ -10,6 +10,7 @@ public static class EndpointTag
 
     public static class Resource
     {
+        public const string Adventure = "Adventure";
         public const string Character = "Character";
     }
 }

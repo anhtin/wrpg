@@ -42,17 +42,17 @@ public static class DeleteCharacterForPlayer
         public required string UserId { get; init; }
     }
 
-    internal class Data
-    {
-        public required Character? Character { get; init; }
-    }
-
     internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
     {
         var character = await dbContext.Characters
             .SingleOrDefaultAsync(x => x.Id == command.CharacterId && x.UserId == command.UserId);
 
         return new() { Character = character };
+    }
+
+    internal class Data
+    {
+        public required Character? Character { get; init; }
     }
 
     internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Data data)

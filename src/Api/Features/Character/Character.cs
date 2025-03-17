@@ -5,8 +5,6 @@ namespace Wrpg;
 
 public sealed class Character : IEntityTypeConfiguration<Character>
 {
-    public const int MaxNameLength = 20;
-
     public Guid Id { get; internal set; }
     public int InternalId { get; internal set; }
     public string UserId { get; internal set; } = null!;
@@ -29,8 +27,8 @@ public sealed class Character : IEntityTypeConfiguration<Character>
         builder.HasIndex(x => x.UserId);
 
         builder.Property(x => x.InternalId).UseSerialColumn().ValueGeneratedOnAdd();
-        builder.Property(x => x.UserId).IsRequired().HasMaxLength(50);
-        builder.Property(x => x.Name).IsRequired().HasMaxLength(MaxNameLength);
+        builder.Property(x => x.UserId).HasMaxLength(Wrpg.UserId.MaxLength);
+        builder.Property(x => x.Name).HasMaxLength(CharacterName.MaxLength);
 
         builder.OwnsOne(x => x.Stats, Stats.Configure);
     }

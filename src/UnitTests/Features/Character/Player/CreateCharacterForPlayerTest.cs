@@ -22,9 +22,9 @@ public class CreateCharacterForPlayerTest
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(15)]
-    [InlineData(20)]
+    [InlineData(CharacterName.MinLength)]
+    [InlineData(((CharacterName.MaxLength - CharacterName.MinLength) / 2) + CharacterName.MinLength)]
+    [InlineData(CharacterName.MaxLength)]
     public void Succeeds_when_character_name_is_not_empty_and_does_not_exceed_max_length(int length)
     {
         var command = CreateCommand(characterName: Generator.RandomString(length, includeSpace: false));
@@ -67,8 +67,8 @@ public class CreateCharacterForPlayerTest
     }
 
     [Theory]
-    [InlineData(21)]
-    [InlineData(22)]
+    [InlineData(CharacterName.MaxLength + 1)]
+    [InlineData(CharacterName.MaxLength + 2)]
     public void Fails_when_character_name_exceeds_max_length(int length)
     {
         var command = CreateCommand(characterName: Generator.RandomString(length, includeSpace: false));
@@ -77,7 +77,7 @@ public class CreateCharacterForPlayerTest
         {
             var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
             Assert.NotNull(subject.Value);
-            Assert.Equal(CreateCharacterForPlayer.CharacterNameExceedsMaxLengthMessage, subject.Value.Detail);
+            Assert.Equal(CharacterName.MaxLengthErrorMessage, subject.Value.Detail);
         });
     }
 
@@ -92,7 +92,7 @@ public class CreateCharacterForPlayerTest
         {
             var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
             Assert.NotNull(subject.Value);
-            Assert.Equal(CreateCharacterForPlayer.CharacterNameIsEmptyMessage, subject.Value.Detail);
+            Assert.Equal(CharacterName.MinLengthErrorMessage, subject.Value.Detail);
         });
     }
 
@@ -111,7 +111,7 @@ public class CreateCharacterForPlayerTest
         string? userId = null) => new()
     {
         CharacterId = characterId ?? Guid.NewGuid(),
-        CharacterName = characterName ?? Generator.RandomString(),
-        UserId = userId ?? Generator.RandomString(),
+        CharacterName = characterName ?? Generator.RandomString(CharacterName.MaxLength),
+        UserId = userId ?? Generator.RandomString(UserId.MaxLength),
     };
 }

@@ -35,15 +35,15 @@ public static class DeleteCharacterForAdmin
         public required Guid CharacterId { get; init; }
     }
 
-    internal class Data
-    {
-        public required Character? Character { get; init; }
-    }
-
     internal static async Task<Data> LoadData(Command command, AppDbContext dbContext)
     {
         var character = await dbContext.Characters.SingleOrDefaultAsync(x => x.Id == command.CharacterId);
         return new() { Character = character };
+    }
+
+    internal class Data
+    {
+        public required Character? Character { get; init; }
     }
 
     internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Data data)

@@ -4,6 +4,7 @@ namespace Wrpg;
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<Adventure> Adventures { get; set; }
     public DbSet<Character> Characters { get; set; }
 
     public static DbContextOptionsBuilder ConfigurePostgreSql(

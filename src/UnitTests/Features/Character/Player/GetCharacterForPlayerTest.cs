@@ -31,7 +31,7 @@ public class GetCharacterForPlayerTest
         var character = CharacterGenerator.Create(
             userId: userId,
             id: Guid.NewGuid(),
-            name: Generator.RandomString(),
+            name: Generator.RandomString(CharacterName.MaxLength),
             stats: CreateRandomStats());
         var dbContext = AppDbContextGenerator.Create(entities: [character]);
 
