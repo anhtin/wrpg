@@ -6,6 +6,7 @@ public static class FeatureHelper
         Func<Task<TData>> loadData,
         Func<TData, FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects)
+        where THttpResult : IResult
     {
         var data = await loadData();
         var result = executeLogic(data);
@@ -16,14 +17,15 @@ public static class FeatureHelper
     public static async Task<THttpResult> Execute<THttpResult, TSideEffects>(
         Func<FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects)
+        where THttpResult : IResult
     {
         var result = executeLogic();
         await executeSideEffects(result.SideEffects);
         return result.Http;
     }
 
-    public static THttpResult Execute<TResult, THttpResult>(Func<TResult> executeLogic)
-        where TResult : FeatureResult<THttpResult>
+    public static THttpResult Execute<THttpResult>(Func<FeatureResult<THttpResult>> executeLogic)
+        where THttpResult : IResult
     {
         var result = executeLogic();
         return result.Http;
@@ -34,6 +36,7 @@ public static class FeatureHelper
         Func<TData, FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
+        where THttpResult : IResult
     {
         try
         {
@@ -54,6 +57,7 @@ public static class FeatureHelper
         Func<FeatureResult<THttpResult, TSideEffects>> executeLogic,
         Func<TSideEffects, Task> executeSideEffects,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
+        where THttpResult : IResult
     {
         try
         {
@@ -72,6 +76,7 @@ public static class FeatureHelper
     public static async Task<THttpResult> TryExecute<THttpResult>(
         Func<FeatureResult<THttpResult>> executeLogic,
         Func<Exception, Task<THttpResult?>> exceptionHandler)
+        where THttpResult : IResult
     {
         try
         {
