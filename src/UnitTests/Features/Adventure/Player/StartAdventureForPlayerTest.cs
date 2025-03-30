@@ -4,8 +4,6 @@ using Wrpg;
 
 namespace Features.Adventure.Player;
 
-using HttpResult = Results<CreatedAtRoute, NotFound, BadRequest<ProblemDetails>, Conflict>;
-
 public class StartAdventureForPlayerTest
 {
     [Theory]
@@ -17,7 +15,7 @@ public class StartAdventureForPlayerTest
         var command = CreateCommand(adventureName: adventureName);
         var data = CreateData();
         var result = StartAdventureForPlayer.ExecuteLogic(command, data);
-        Assert.IsType<CreatedAtRoute>(result.Http.Result);
+        Assert.IsType<CreatedAtRoute>(result.Http);
         Assert.NotNull(result.SideEffects);
         Assert.Equal(trimmedAdventureName, result.SideEffects.CreateAdventure.Entity.Name);
     }
@@ -35,13 +33,13 @@ public class StartAdventureForPlayerTest
     }
 
     private static void AssertSuccess(
-        FeatureResult<HttpResult, StartAdventureForPlayer.SideEffects?> result,
+        FeatureResult<StartAdventureForPlayer.SideEffects?> result,
         StartAdventureForPlayer.Command command)
     {
         Assert.Multiple(
             () =>
             {
-                var subject = Assert.IsType<CreatedAtRoute>(result.Http.Result);
+                var subject = Assert.IsType<CreatedAtRoute>(result.Http);
                 Assert.Multiple(
                     () => Assert.Equal(nameof(GetAdventureForPlayer), subject.RouteName),
                     () =>
@@ -78,7 +76,7 @@ public class StartAdventureForPlayerTest
         var result = StartAdventureForPlayer.ExecuteLogic(command, data);
         AssertFailure(result, () =>
         {
-            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http);
             Assert.NotNull(subject.Value);
             Assert.Equal(StartAdventureForPlayer.CharacterIsAlreadyOnAdventureErrorMessage, subject.Value.Detail);
         });
@@ -94,7 +92,7 @@ public class StartAdventureForPlayerTest
         var result = StartAdventureForPlayer.ExecuteLogic(command, data);
         AssertFailure(result, () =>
         {
-            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http);
             Assert.NotNull(subject.Value);
             Assert.Equal(AdventureName.MaxLengthErrorMessage, subject.Value.Detail);
         });
@@ -110,14 +108,14 @@ public class StartAdventureForPlayerTest
         var result = StartAdventureForPlayer.ExecuteLogic(command, data);
         AssertFailure(result, () =>
         {
-            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http);
             Assert.NotNull(subject.Value);
             Assert.Equal(AdventureName.MinLengthErrorMessage, subject.Value.Detail);
         });
     }
 
     private static void AssertFailure(
-        FeatureResult<HttpResult, StartAdventureForPlayer.SideEffects?> result,
+        FeatureResult<StartAdventureForPlayer.SideEffects?> result,
         Action additionalTestCode)
     {
         Assert.Multiple(

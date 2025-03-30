@@ -7,8 +7,6 @@ using Npgsql;
 
 namespace Wrpg;
 
-using HttpResult = Results<CreatedAtRoute, NotFound, BadRequest<ProblemDetails>, Conflict>;
-
 [Feature]
 public static class StartAdventureForPlayer
 {
@@ -18,10 +16,14 @@ public static class StartAdventureForPlayer
         builder.MapPost("adventure", Execute)
             .WithTags(EndpointTag.Role.Player, EndpointTag.Resource.Adventure)
             .WithName(nameof(StartAdventureForPlayer))
-            .RequirePermissionAny(Permission.CharacterWriteOwn);
+            .RequirePermissionAny(Permission.CharacterWriteOwn)
+            .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status409Conflict);
     }
 
-    internal static async Task<HttpResult> Execute(
+    internal static async Task<IResult> Execute(
         [FromHeader(Name = CustomHttpHeader.IdempotencyKey)]
         Guid idempotencyKey,
         [FromBody] Request request,
@@ -83,16 +85,16 @@ public static class StartAdventureForPlayer
         public required bool CharacterIsAlreadyOnAdventure { get; init; }
     }
 
-    internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Command command, Data? data)
+    internal static FeatureResult<SideEffects?> ExecuteLogic(Command command, Data? data)
     {
-        if (data is null) return new() { Http = TypedResults.NotFound() };
+        if (data is null) return TypedResults.NotFound();
 
         if (data.CharacterIsAlreadyOnAdventure)
-            return new() { Http = CustomTypedResults.BadRequest(CharacterIsAlreadyOnAdventureErrorMessage) };
+            return CustomTypedResults.BadRequest(CharacterIsAlreadyOnAdventureErrorMessage);
 
         var adventureName = AdventureName.Normalized(command.AdventureName ?? AdventureName.Generate());
         if (!AdventureName.IsValid(adventureName, out var error))
-            return new() { Http = CustomTypedResults.BadRequest(error) };
+            return CustomTypedResults.BadRequest(error);
 
         var adventure = Adventure.CreateNew(command.AdventureId, command.UserId, command.CharacterId, adventureName);
 
@@ -121,7 +123,7 @@ public static class StartAdventureForPlayer
         await dbContext.SaveChangesAsync();
     }
 
-    internal static async Task<HttpResult?> HandleException(
+    internal static async Task<IResult?> HandleException(
         Exception e,
         Command command,
         AppDbContext dbContext)

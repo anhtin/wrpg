@@ -12,7 +12,7 @@ public class DeleteCharacterForPlayerTest
         var result = DeleteCharacterForPlayer.ExecuteLogic(data);
 
         Assert.Multiple(
-            () => Assert.IsType<Ok>(result.Http.Result),
+            () => Assert.IsType<Ok>(result.Http),
             () =>
             {
                 var subject = result.SideEffects;
@@ -28,7 +28,7 @@ public class DeleteCharacterForPlayerTest
         var result = DeleteCharacterForPlayer.ExecuteLogic(data);
 
         Assert.Multiple(
-            () => Assert.IsType<NotFound>(result.Http.Result),
+            () => Assert.IsType<NotFound>(result.Http),
             () =>
             {
                 var subject = result.SideEffects;

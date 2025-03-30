@@ -1,12 +1,26 @@
-﻿namespace Wrpg;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
-public sealed class FeatureResult<THttpResult, TSideEffects> where THttpResult : IResult
+namespace Wrpg;
+
+public sealed class FeatureResult<TSideEffects>
 {
-    public required THttpResult Http { get; init; }
+    public required IResult Http { get; init; }
     public TSideEffects SideEffects { get; init; } = default!;
+
+
+    // @formatter:off
+    public static implicit operator FeatureResult<TSideEffects>(Ok result) => new() { Http = result };
+    public static implicit operator FeatureResult<TSideEffects>(BadRequest<ProblemDetails> result) => new() { Http = result };
+    public static implicit operator FeatureResult<TSideEffects>(NotFound result) => new() { Http = result };
+    // @formatter:on
 }
 
-public sealed class FeatureResult<THttpResult> where THttpResult : IResult
+public sealed class FeatureResult
 {
-    public required THttpResult Http { get; init; }
+    public required IResult Http { get; init; }
+
+    public static implicit operator FeatureResult(Ok result) => new() { Http = result };
+    public static implicit operator FeatureResult(BadRequest<ProblemDetails> result) => new() { Http = result };
+    public static implicit operator FeatureResult(NotFound result) => new() { Http = result };
 }

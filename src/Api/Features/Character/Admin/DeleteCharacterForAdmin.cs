@@ -1,10 +1,7 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Wrpg;
-
-using HttpResult = Results<Ok, NotFound>;
 
 [Feature]
 public static class DeleteCharacterForAdmin
@@ -15,10 +12,12 @@ public static class DeleteCharacterForAdmin
         builder.MapDelete("admin/character/{id}", Execute)
             .WithTags(EndpointTag.Role.Admin, EndpointTag.Resource.Character)
             .WithName(nameof(DeleteCharacterForAdmin))
-            .RequirePermissionAny(Permission.CharacterWriteAll);
+            .RequirePermissionAny(Permission.CharacterWriteAll)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
     }
 
-    internal static async Task<HttpResult> Execute(Guid id, AppDbContext dbContext)
+    internal static async Task<IResult> Execute(Guid id, AppDbContext dbContext)
     {
         var command = new Command
         {
@@ -46,10 +45,10 @@ public static class DeleteCharacterForAdmin
         public required Character? Character { get; init; }
     }
 
-    internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Data data)
+    internal static FeatureResult<SideEffects?> ExecuteLogic(Data data)
     {
         if (data.Character is null)
-            return new() { Http = TypedResults.NotFound() };
+            return TypedResults.NotFound();
 
         return new()
         {

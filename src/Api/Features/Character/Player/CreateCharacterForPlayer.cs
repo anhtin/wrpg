@@ -1,13 +1,10 @@
 ﻿using System.Security.Claims;
 using JetBrains.Annotations;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Wrpg;
-
-using HttpResult = Results<CreatedAtRoute, Conflict, BadRequest<ProblemDetails>>;
 
 [Feature]
 public static class CreateCharacterForPlayer
@@ -18,10 +15,13 @@ public static class CreateCharacterForPlayer
         builder.MapPost("character", Execute)
             .WithTags(EndpointTag.Role.Player, EndpointTag.Resource.Character)
             .WithName(nameof(CreateCharacterForPlayer))
-            .RequirePermissionAny(Permission.CharacterWriteOwn);
+            .RequirePermissionAny(Permission.CharacterWriteOwn)
+            .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status409Conflict);
     }
 
-    internal static async Task<HttpResult> Execute(
+    internal static async Task<IResult> Execute(
         [FromBody] Request body,
         [FromHeader(Name = CustomHttpHeader.IdempotencyKey)]
         Guid idempotencyKey,
@@ -53,11 +53,11 @@ public static class CreateCharacterForPlayer
         public required string UserId { get; init; }
     }
 
-    internal static FeatureResult<HttpResult, SideEffects?> ExecuteLogic(Command command)
+    internal static FeatureResult<SideEffects?> ExecuteLogic(Command command)
     {
         var characterName = CharacterName.Normalized(command.CharacterName);
         if (!CharacterName.IsValid(characterName, out var error))
-            return new() { Http = CustomTypedResults.BadRequest(error) };
+            return CustomTypedResults.BadRequest(error);
 
         var character = Character.CreateNew(command.CharacterId, characterName, command.UserId);
         return new()
@@ -83,7 +83,7 @@ public static class CreateCharacterForPlayer
         await dbContext.SaveChangesAsync();
     }
 
-    internal static async Task<HttpResult?> HandleException(
+    internal static async Task<IResult?> HandleException(
         Exception e,
         Command command,
         AppDbContext dbContext)

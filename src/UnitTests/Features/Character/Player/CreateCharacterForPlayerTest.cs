@@ -4,8 +4,6 @@ using Wrpg;
 
 namespace Features.Character.Player;
 
-using HttpResult = Results<CreatedAtRoute, Conflict, BadRequest<ProblemDetails>>;
-
 public class CreateCharacterForPlayerTest
 {
     [Theory]
@@ -16,7 +14,7 @@ public class CreateCharacterForPlayerTest
     {
         var command = CreateCommand(characterName: characterName);
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
-        Assert.IsType<CreatedAtRoute>(result.Http.Result);
+        Assert.IsType<CreatedAtRoute>(result.Http);
         Assert.NotNull(result.SideEffects);
         Assert.Equal(trimmedCharacterName, result.SideEffects.CreateCharacter.Entity.Name);
     }
@@ -33,13 +31,13 @@ public class CreateCharacterForPlayerTest
     }
 
     private static void AssertSuccess(
-        FeatureResult<HttpResult, CreateCharacterForPlayer.SideEffects?> result,
+        FeatureResult<CreateCharacterForPlayer.SideEffects?> result,
         CreateCharacterForPlayer.Command command)
     {
         Assert.Multiple(
             () =>
             {
-                var subject = Assert.IsType<CreatedAtRoute>(result.Http.Result);
+                var subject = Assert.IsType<CreatedAtRoute>(result.Http);
                 Assert.Multiple(
                     () => Assert.Equal(nameof(GetCharacterForPlayer), subject.RouteName),
                     () =>
@@ -75,7 +73,7 @@ public class CreateCharacterForPlayerTest
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
         AssertFailure(result, () =>
         {
-            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http);
             Assert.NotNull(subject.Value);
             Assert.Equal(CharacterName.MaxLengthErrorMessage, subject.Value.Detail);
         });
@@ -90,14 +88,14 @@ public class CreateCharacterForPlayerTest
         var result = CreateCharacterForPlayer.ExecuteLogic(command);
         AssertFailure(result, () =>
         {
-            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http.Result);
+            var subject = Assert.IsType<BadRequest<ProblemDetails>>(result.Http);
             Assert.NotNull(subject.Value);
             Assert.Equal(CharacterName.MinLengthErrorMessage, subject.Value.Detail);
         });
     }
 
     private static void AssertFailure(
-        FeatureResult<HttpResult, CreateCharacterForPlayer.SideEffects?> result,
+        FeatureResult<CreateCharacterForPlayer.SideEffects?> result,
         Action additionalTestCode)
     {
         Assert.Multiple(
