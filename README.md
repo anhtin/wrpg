@@ -19,5 +19,4 @@ set up correctly on your machine by running the following command.
 
 #### NOTE
 - The `secret.json` file is ignored by git (`.gitignore`).
-- Remove secrets from machine by running `dotnet user-secrets clear`. Avoid checking secret IDs in `*.csproj` files into
-  source control.
+- Remove secrets from machine by running `dotnet user-secrets clear`.
